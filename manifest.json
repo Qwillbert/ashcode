@@ -16,7 +16,7 @@
     "shortcuts": [
         {
             "name": "Project Viewer",
-            "url": "/projectViewer.html",
+            "url": "/ashcode/projectViewer.html",
             "description": "Share your projects with your friends!",
             "icons": [
                 {

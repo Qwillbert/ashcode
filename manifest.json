@@ -2,7 +2,7 @@
     "name": "Ash-code",
     "short_name": "Ash Code",
     "description": "A lightweight code editor for quickly testing out projects",
-    "start_url": "/",
+    "start_url": "/ashcode",
     "display": "fullscreen",
     "background_color": "#282c34",
     "theme_color": "#282c34",

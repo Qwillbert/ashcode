@@ -1,0 +1,33 @@
+{
+    "name": "Ash-code",
+    "short_name": "Ash Code",
+    "description": "A lightweight code editor for quickly testing out projects",
+    "start_url": "/",
+    "display": "fullscreen",
+    "background_color": "#282c34",
+    "theme_color": "#282c34",
+    "icons": [
+        {
+            "src": "/favicon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Project Viewer",
+            "url": "/projectViewer.html",
+            "description": "Share your projects with your friends!",
+            "icons": [
+                {
+                    "src": "/favicon.png",
+                    "type": "image/png",
+                    "sizes": "512x512"
+                }
+            ]
+        }
+    ],
+    "display_override": [
+        "window-controls-overlay"
+    ]
+}

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#222222" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ash-code | Project Viewer</title>
+    <link rel="icon" href="favicon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/super-simple-popup@latest/index.css">
+    <style>
+        .popup-container {
+            background-color: #424242;
+            color: white;
+        }
+
+        .popup-content>.menuItem {
+            width: 100%;
+            text-align: center;
+            display: block;
+            border: 2px solid gray;
+            margin-bottom: 13px;
+            border-radius: 3px;
+            transition: 100ms;
+            cursor: pointer;
+        }
+
+        .popup-content>.menuItem:hover {
+            background-color: rgb(60, 60, 60);
+        }
+
+        .popup-content {
+            overflow-x: hidden;
+            z-index: 999999999999999 !important;
+        }
+
+        .popup-header {
+            background-color: #424242;
+            color: white;
+        }
+
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: sans-serif
+        }
+
+        #project-list h1,
+        #project-list h2 {
+            margin-bottom: 10px;
+            color: #fff;
+
+        }
+
+        #project-list {
+            list-style: none;
+            padding: 0;
+            color: #fff;
+        }
+
+        #project-list button {
+            background-color: #3d3d3d;
+            color: #fff;
+            border: none;
+            border-radius: 2px;
+            padding: 5px 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            display: block;
+        }
+
+        #project-list button:hover {
+            background-color: #565656;
+
+        }
+
+        #project-list span {
+            font-style: italic;
+            margin-left: 5px;
+            color: #fff;
+
+        }
+
+        button{
+            background-color: #565656;
+            color: white;
+            border: 1px darkgray solid;
+            padding: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input {
+            background-color: #565656;
+            color: white;
+            border: 1px darkgray solid;
+            padding: 6px;
+            border-radius: 4px;
+        }
+
+        input::placeholder {
+            color: white;
+        }
+
+        hr {
+            border-color: rgb(105, 105, 105);
+        }
+
+        svg {
+            height: 1em;
+            width: 1em;
+            top: .125em;
+            position: relative;
+        }
+
+        button:focus-visible {
+            outline: 1px solid white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+        </svg>
+        Project List</h1>
+    <hr>
+    <input type="text" placeholder="search projects">
+    <hr>
+    <div id="project-list"></div>
+
+    <hr>
+    <button onclick="functions.startUpload()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        Upload</button>
+    <button onclick="location.href='index.html'">Back to Ash-code</button>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script>
+        window.functions = {};
+        window.save = [{}];
+        window.recent = {};
+        window.options = {};
+        if (localStorage.getItem('ashcodeSave') || localStorage.getItem('ashcodeRecent')) {
+            alert('converting old saves to new saving system')
+            save = JSON.parse(localStorage.getItem('ashcodeSave'));
+            recent = JSON.parse(localStorage.getItem('ashcodeRecent'));
+            localStorage.setItem('ashcodeData', JSON.stringify({
+                save: save,
+                recent: recent,
+                options: { autoClear: false, infiniteObjectNesting: false, autoSave: true }
+            }))
+
+            localStorage.removeItem('ashcodeSave')
+            localStorage.removeItem('ashcodeRecent')
+            window.location.reload();
+        }
+        if (localStorage.getItem('ashcodeData')) {
+            let data = JSON.parse(localStorage.getItem('ashcodeData'));
+            save = data.save;
+            recent = data.recent;
+            options = data.options;
+        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLpChEYY5dCFNZmfLVmdaG_sY6FRb8zSU",
+            authDomain: "ashcode-cfc1b.firebaseapp.com",
+            projectId: "ashcode-cfc1b",
+            storageBucket: "ashcode-cfc1b.appspot.com",
+            messagingSenderId: "98541478011",
+            appId: "1:98541478011:web:cc94bc4a49705d035582de"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+    </script>
+
+    <script type="module">
+        import Popup from "https://cdn.skypack.dev/super-simple-popup";
+        window.projects = [];
+        functions.fetchProjects = function () {
+            var projectList = document.getElementById('project-list');
+            projectList.innerHTML = '';
+
+            db.collection('projects').get()
+                .then(function (querySnapshot) {
+                    querySnapshot.forEach(function (doc) {
+                        var projectName = doc.data().name;
+                        let button = document.createElement("button")
+                        button.innerHTML = `${projectName} |<span>${doc.data().username}</span></span>`
+
+                        button.setAttribute("onclick", `functions.loadProject(${projects.length})`)
+                        // projectList.innerHTML += `<button onclick="functions.loadProject(${projects.length})">${projectName} | <span>${doc.data().username}</span> | <span>${doc.data().description || "No description"}</span></button><br>`;
+                        projectList.appendChild(button)
+                        button.addEventListener("contextmenu", (e) => {
+                            e.preventDefault()
+                            functions.delete(doc.ref)
+                        })
+                        projects.push({
+                            name: doc.data().name,
+                            js: doc.data().js,
+                            html: doc.data().html,
+                            username: doc.data().username,
+                            description: doc.data().description,
+                            createdAt: doc.data().createdAt
+                        })
+                    });
+                })
+                .catch(function (error) {
+                    console.log('Error getting projects:', error);
+                });
+        }
+
+        functions.reloadProjects = function (query) {
+            var projectList = document.getElementById('project-list');
+            projectList.innerHTML = '';
+            projects.forEach((project, i) => {
+                if (query) {
+                    if (project.name.toLowerCase().includes(query.toLowerCase())) {
+                        let button = document.createElement("button")
+                        button.innerHTML = `${project.name} |<span>${project.username}</span></span>`
+
+                        button.setAttribute("onclick", `functions.loadProject(${i})`)
+                        // projectList.innerHTML += `<button onclick="functions.loadProject(${projects.length})">${projectName} | <span>${doc.data().username}</span> | <span>${doc.data().description || "No description"}</span></button><br>`;
+                        projectList.appendChild(button)
+                    }
+                } else {
+                    let button = document.createElement("button")
+                        button.innerHTML = `${project.name} |<span>${project.username}</span></span>`
+
+                        button.setAttribute("onclick", `functions.loadProject(${i})`)
+                        // projectList.innerHTML += `<button onclick="functions.loadProject(${projects.length})">${projectName} | <span>${doc.data().username}</span> | <span>${doc.data().description || "No description"}</span></button><br>`;
+                        projectList.appendChild(button)
+                }
+            })
+        }
+
+        document.querySelector('input').addEventListener('input', (e)=>{
+            functions.reloadProjects(e.target.value);
+        })
+
+        functions.startUpload = function () {
+            let html = functions.generateHTML();
+            new Popup({
+                title: 'Choose a workspace to upload',
+                plainText: false,
+                clickBackdropToClose: true,
+                content: html
+            })
+        }
+
+        functions.delete = function (docRef) {
+            if (confirm("Really delete this project?")) {
+                docRef.delete().then(() => {
+                    alert("Project successfully deleted")
+                    window.location.reload()
+                }).catch((error) => {
+                    alert("Failed to delete project")
+                    console.error(error)
+                })
+            }
+        }
+
+        functions.uploadProject = function (id) {
+            if (confirm(`Are you sure you would like to upload the project: ${save[id].name} to the project List?`)) {
+                let username = prompt("What would you like your display name to be?")
+                if (!username) username = "Unknown"
+                let description = prompt("Optionally describe this project.")
+                if (!description) description = "No description"
+                db.collection('projects').add({
+                    name: save[id].name,
+                    js: save[id].js,
+                    html: save[id].html,
+                    username: username,
+                    description: description,
+                    createdAt: Date.now()
+                }).then(() => {
+                    alert("Uploaded project, the page will now reload.")
+                    window.location.reload()
+                })
+            }
+        }
+
+        functions.loadProject = function (id) {
+            new Popup({
+                title: "Add project to library?",
+                plainText: false,
+                clickBackdropToClose: true,
+                content: `
+                <h1>${projects[id].name}</h1>
+                <p>
+                    Created by: ${projects[id].username}
+                    ${projects[id].createdAt ? "<br><br>Uploaded At: " + new Date(projects[id].createdAt).toLocaleString() : ""}
+                    <br><br>
+                    ${projects[id].description ? projects[id].description : "this project doesn't have a description"}
+                </p>
+                <button onclick="functions.downloadProject(${id})">Add to library</button>
+                `
+            })
+        }
+
+        functions.downloadProject = function (id) {
+            save.push(projects[id]);
+            localStorage.setItem('ashcodeData', JSON.stringify({
+                save: save,
+                recent: recent,
+                options: options
+            }))
+            document.querySelector('.popup-backdrop').remove();
+            document.querySelector('.popup-container').remove()
+        }
+
+        functions.generateHTML = function () {
+            var html = "";
+            for (let i = 0; i < save.length; i++) {
+                const s = save[i];
+                html += `<div class="menuItem" onclick="functions.uploadProject(${i})">${s.name ? s.name : "Empty"}</div>`;
+            }
+            return html
+        }
+        functions.fetchProjects();
+        if (new URL(location.href).searchParams.get('export') !== null) {
+            functions.startUpload()
+        }
+    </script>
+</body>
+
+</html>

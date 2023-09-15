@@ -10,35 +10,44 @@
     <link rel="icon" href="favicon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/super-simple-popup@latest/index.css">
     <style>
-        .popup-container {
-            background-color: #424242;
-            color: white;
-        }
+        .popup-container,.popup-header,.popup-close {
+    color: white;
+    background-color: #424242;
+}
 
-        .popup-content>.menuItem {
-            width: 100%;
-            text-align: center;
-            display: block;
-            border: 2px solid gray;
-            margin-bottom: 13px;
-            border-radius: 3px;
-            transition: 100ms;
-            cursor: pointer;
-        }
+.popup-content::-webkit-scrollbar {
+    width: 1px;
+}
+.popup-content {
+    overflow-x: hidden;
+    display: grid;
+    z-index: 999999999999999 !important;
+    grid-template-columns: repeat(3, 1fr);
+    /* grid-template-rows: repeat(3, 1fr); */
+    /* grid-column-gap: 0px; */
+    /* grid-auto-rows: 1fr; */
+    gap: 3px;
+    background-color: #585858;
+    color: white;
+}
 
-        .popup-content>.menuItem:hover {
-            background-color: rgb(60, 60, 60);
-        }
+.popup-content>.menuItem {
+    background-color: #424242;
+    height: 80px;
+    text-align: center;
+    margin: 3px;
+    border-radius: 3px;
+    transition: 100ms;
+    cursor: pointer;
+    border:dashed 1px transparent;
+    text-align: center;
+    
+}
 
-        .popup-content {
-            overflow-x: hidden;
-            z-index: 999999999999999 !important;
-        }
-
-        .popup-header {
-            background-color: #424242;
-            color: white;
-        }
+.popup-content>.menuItem:hover {
+    background-color: #333842;
+    border:dashed 1px white;
+}
 
         body {
             background-color: #222;
@@ -137,7 +146,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         Upload</button>
-    <button onclick="location.href='/ashcode/index.html'">Back to Ash-code</button>
+    <button onclick="location.href='index.html'">Back to Ash-code</button>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script>

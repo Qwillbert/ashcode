@@ -8,7 +8,7 @@
     "theme_color": "#282c34",
     "icons": [
         {
-            "src": "/favicon.png",
+            "src": "assets/favicon.png",
             "sizes": "512x512",
             "type": "image/png"
         }
@@ -20,7 +20,7 @@
             "description": "Share your projects with your friends!",
             "icons": [
                 {
-                    "src": "/favicon.png",
+                    "src": "assets/favicon.png",
                     "type": "image/png",
                     "sizes": "512x512"
                 }

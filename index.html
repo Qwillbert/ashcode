@@ -6,7 +6,7 @@
     <title>Ash-code</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <link rel="manifest" href="manifest.json">
-    <link rel="shortcut icon" href="/ashcode/assets/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
     <link rel="stylesheet" type="text/css" data-name="vs/editor/editor.main"
         href="https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/editor/editor.main.css">
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.15.2/src-min-noconflict/ace.min.js"></script>
@@ -19,12 +19,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-html.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/super-simple-popup@latest/index.css">
+    <link rel="stylesheet" href="style.css">
     <script>
         var editorJS, editorHTML;
         window.save = [{}];
         window.recent = {};
         window.functions = {};
-        window.options = { autoClear: false, infiniteObjectNesting: false, autoSave: true, timeBeforeUpdate: 0.5, autoUpdate: true };
+        window.options = { autoClear: false, infiniteObjectNesting: false, autoSave: true, timeBeforeUpdate: 0.5, autoUpdate: true, aiAce: false };
         if (localStorage.getItem('ashcodeSave') || localStorage.getItem('ashcodeRecent')) {
             alert('converting old saves to new saving system')
             save = JSON.parse(localStorage.getItem('ashcodeSave'));
@@ -39,6 +40,22 @@
             localStorage.removeItem('ashcodeRecent')
             window.location.reload();
         }
+        var changelog = `
+         == 9/19/23 ==
+         - Added AI
+           - Ask Questions about your javascript
+           - HTML comming soon (but do you really need it?)
+           - Option to use Ace for AI generated Code
+         == Roadmap == 
+         - Change to IndexDB for storage instead of localStorage
+         - Fully fix PWA mode
+         - Allow users in PWA mode to "open in Ash-code"
+         == 9/16/23 ==
+         - Added storage meter
+         - Fixed CSS for Chrome and Firefox
+         - Turned into PWA (Progressive Web Application)
+         - Allowed the built in console to recive html elemnts (note: event listeners and some types of elements, will still produce an error)
+                 `
         var injectScript = `
         <!-- Injected by ash-code | Forward Facing Console -->
         <script id="ashcodeInjectedScript">
@@ -97,336 +114,12 @@
   return obj;
 }
         <\/script>`
-
     </script>
-    <style>
-        :root {
-            background-color: #282c34;
-            margin: 0px;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        #editorHTML {
-            position: absolute;
-            top: env(titlebar-area-height, 20px);
-            left: 0px;
-            width: 100%;
-            height: calc(49.9% - env(titlebar-area-height, 20px));
-            border-bottom: solid white 10px;
-        }
-
-        #editorJS {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50%;
-        }
-
-        #container {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            width: 50%;
-            height: 100%;
-            resize: horizontal;
-        }
-
-        iframe {
-            position: fixed;
-            top: env(titlebar-area-height, 20px);
-            right: 0;
-            width: 50%;
-            height: calc(100% - env(titlebar-area-height, 20px));
-            z-index: -3;
-            background-color: white;
-        }
-
-        iframe.fullscreen {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-        }
-
-        iframe.fullscreen+#fullscreenButton {
-            display: block;
-        }
-
-        #fullscreenButton {
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            display: none;
-            z-index: 1001;
-            background-color: rgba(0, 0, 0, 0.1);
-            border: none;
-            border-bottom-right-radius: 5px;
-            -webkit-app-region: no-drag;
-        }
-
-        #controls {
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            z-index: 999;
-            width: 100%;
-            height: env(titlebar-area-height, 20px);
-            padding-left: 35px;
-            -webkit-app-region: drag;
-        }
-
-        #controls>img {
-            height: 20px;
-            display: inline;
-            position: absolute;
-            left: 7.5px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        #controls>button {
-            -webkit-app-region: no-drag;
-            /* background-color: rgba(255, 255, 255, 1); */
-            /* border: black solid 1px; */
-            border: none;
-            border-radius: 5px;
-            color: white;
-            background-color: transparent;
-            height: env(titlebar-area-height, 20px);
-            box-sizing: border-box;
-            border: transparent solid 1px;
-        }
-
-        #controls>button:hover {
-            border: dashed white 1px;
-        }
-
-        #consoleControls>button {
-            background-color: rgba(255, 255, 255, 1);
-            border: black solid 1px;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            background-color: transparent;
-            height: 20px;
-        }
-
-        .dropdown {
-            position: absolute;
-            margin: 0px;
-            padding: 0px;
-            background-color: #282c34;
-            border: 1px solid black;
-            border-radius: 5px;
-            display: none;
-            width: 200px;
-            text-align: left;
-        }
-
-        .subMenu {
-            position: relative;
-        }
-
-        .subMenu>.dropdown {
-            transform: translateX(95%);
-            filter: none;
-            position: absolute;
-            top: 0px;
-        }
-
-        .subMenu::after {
-            content: ">";
-            position: absolute;
-            right: 10px;
-        }
-
-        .dropdown>span:hover {
-            background-color: #1e2127;
-            cursor: pointer;
-        }
-
-        .dropdown>span {
-            width: 100%;
-            display: block;
-            border-radius: 5px;
-            padding-left: 6px;
-            box-sizing: border-box;
-        }
-
-        #controls>button:hover>.dropdown,
-        #controls>button>.dropdown:hover,
-        .subMenu:hover>.dropdown,
-        .subMenu>.dropdown:hover {
-            display: block;
-        }
-
-        .dropdown>hr {
-            border: solid 1px lightgray;
-            background: lightgray;
-            border-radius: 100px;
-            margin: 2px;
-        }
-
-
-        .dropdown>span[data-value]::before {
-            padding-right: 6px;
-            padding-left: 3px;
-        }
-
-        .dropdown>span[data-value="false"]::before {
-            content: "☐";
-        }
-
-        .dropdown>span[data-value="true"]::before {
-            content: "⮽";
-        }
-
-        .popup-container,
-        .popup-header,
-        .popup-close {
-            color: white;
-            background-color: #282c34;
-        }
-
-        .popup-content::-webkit-scrollbar {
-            width: 1px;
-        }
-
-        .popup-content {
-            overflow-x: hidden;
-            display: grid;
-            z-index: 999999999999999 !important;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 3px;
-            background-color: #282c34;
-            color: white;
-        }
-
-        .popup-content>.menuItem {
-            background-color: #2d313a;
-            height: 80px;
-            text-align: center;
-            margin: 3px;
-            border-radius: 3px;
-            transition: 100ms;
-            cursor: pointer;
-            border: dashed 1px transparent;
-            text-align: center;
-
-        }
-
-        .popup-content>.menuItem:hover {
-            background-color: #333842;
-            border: dashed 1px white;
-        }
-
-
-        #console {
-            position: fixed;
-            bottom: 0px;
-            right: 0px;
-            z-index: 0;
-            width: 50%;
-            height: 300px;
-            background-color: #222;
-            color: #fff;
-            overflow-y: auto;
-        }
-
-        #console>#log {
-            color: white;
-            overflow-y: scroll;
-            height: calc(100% - 40px);
-            top: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #consoleControls {
-            height: 20px;
-            width: 100%;
-            background-color: black;
-        }
-
-        #console>input {
-            position: absolute;
-            bottom: 0px;
-            left: 0px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            height: 20px;
-            font-family: 'Courier New', Courier, monospace;
-
-        }
-
-        .message {
-            background-color: rgb(0, 119, 198);
-            padding-left: 10px;
-            border-bottom: solid 3px rgb(1, 97, 161);
-
-        }
-
-        .info {
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 0px 5px;
-
-        }
-
-        .infoB {
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 0px 5px;
-            border-bottom: solid 3px rgba(255, 255, 255, 0.2);
-        }
-
-        .error {
-            background-color: #b71c1c;
-            padding: 0px 5px;
-            border-bottom: solid 3px #861515;
-
-        }
-
-        .error::before {
-            content: "⮾";
-            font-weight: bold;
-            margin-left: 10px;
-            color: #fff;
-            margin-right: 10px;
-        }
-
-        .warn {
-            background-color: #ff9800;
-            padding: 5px;
-            border-bottom: solid 3px #b86f01;
-        }
-
-        .warn::before {
-            content: "⚠";
-            font-weight: bold;
-            margin-left: 10px;
-            color: #fff;
-            margin-right: 10px;
-        }
-
-        input[type="text"] {
-            background-color: #444 !important;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-    </style>
 </head>
 
 <body>
     <div id="controls">
-        <img src="/ashcode/assets/favicon.png">
+        <img src="favicon.png">
         <button>File
             <div class="dropdown">
                 <span onclick="functions.toggleSimpleOption(event, 'autoSave')" data-value=true
@@ -436,24 +129,23 @@
                 <span onclick="location.href = 'projectViewer.html'">Project Gallery</span>
                 <span class="subMenu">Import
                     <div class="dropdown">
-                        <span onclick="functions.importAll()">Import projects from File</span>
+                        <span onclick="functions.importAll()">Import projects from file</span>
                         <span onclick="functions.importWorkspace()">Import Workspace from HTML File</span>
-                        <span onclick="location.href = 'projectViewer.html?import'">Import projects from Project
-                            Gallery</span>
+                        <span onclick="location.href = 'projectViewer.html?import'">Import projects from Project Gallery</span>
                     </div>
                 </span>
                 <span class="subMenu">Export
                     <div class="dropdown">
-                        <span onclick="functions.exportAll()">Export All projects to File</span>
-                        <span onclick="functions.downloadWorkspace()">Download Current Workspace as HTML</span>
-                        <span onclick="location.href = 'projectViewer.html?export'">Export projects to Project
-                            Gallery</span>
+                        <span onclick="functions.exportAll()">Export all projects to file</span>
+                        <span onclick="functions.downloadWorkspace()">Download current workspace as HTML</span>
+                        <span onclick="location.href = 'projectViewer.html?export'">Export projects to Project Gallery</span>
                     </div>
                 </span>
                 <span class="subMenu">Preferences
                     <div class="dropdown">
                         <span onclick="functions.updateTabSize()">Update Tab Size</span>
                         <span onclick="functions.toggleEnableEmmet()" data-value=true>Enable Emmet</span>
+                        <span onclick="functions.toggleSimpleOption(event, 'aiAce')" data-name="aiAce" data-value=false>Use Ace for AI code</span>
                     </div>
                 </span>
             </div>
@@ -462,6 +154,7 @@
             <div class="dropdown">
                 <span onclick="functions.formatWorkspace()">Format</span>
                 <span onclick="functions.resetWorkspace()">Reset</span>
+                <span onclick="functions.askAI(prompt('What would you like to ask AI about?'))">Ask AI</span>
             </div>
         </button>
         <button>View
@@ -470,31 +163,29 @@
                 <span onclick="functions.fullscreen()">Fullscreen</span>
                 <span class="subMenu">Auto-Update
                     <div class="dropdown">
-                        <span onclick="functions.toggleSimpleOption(event, 'autoUpdate')" data-value="true"
-                            data-name="autoUpdate">Auto Update
-                            enabled</span>
+                        <span onclick="functions.toggleSimpleOption(event, 'autoUpdate')" data-value="true" data-name="autoUpdate">Auto Update enabled</span>
                         <span onclick="functions.updateAutoUpdateTimer()">Update time before auto-update</span>
                     </div>
                 </span>
+                <span onclick="functions.openChangelog()">View Changelog</span>
             </div>
         </button>
         <button>Console
             <div class="dropdown">
                 <span onclick="functions.toggleConsole()" data-value=true>Enable Console</span>
-                <span onclick="functions.toggleSimpleOption(event, 'autoClear')" data-value=false
-                    data-name="autoClear">Clear Console on
-                    Update</span>
-                <span onclick="functions.toggleSimpleOption(event, 'infiniteObjectNesting')" data-value=false
-                    data-name="infiniteObjectNesting">Allow
-                    Infinite Object Nesting</span>
+                <span onclick="functions.toggleSimpleOption(event, 'autoClear')" data-value=false data-name="autoClear">Clear Console on Update</span>
+                <span onclick="functions.toggleSimpleOption(event, 'infiniteObjectNesting')" data-value=false data-name="infiniteObjectNesting">Allow Infinite Object Nesting</span>
+                <span onclick="functions.setConsoleHeight()">Set Console Height</span>
             </div>
         </button>
-        <button onclick="functions.updateFrame(true);">Update iFrame</button>
+        <button style="display: none;" onclick="functions.quickUpdate()">Update iFrame</button>
     </div>
     <div id="container">
         <div id="editorHTML"></div>
         <div id="editorJS"></div>
     </div>
+    <div id="aiPopup"></div>
+    <button id="closeAiPopup">X</button>
     <iframe frameborder="0"></iframe>
     <button id="fullscreenButton" onclick="functions.fullscreen()">X</button>
     <div id="console">
@@ -517,6 +208,7 @@
                     document.querySelector(`span[data-name="${option}"]`).dataset.value = options[option].toString()
                 }
             }
+            document.querySelector('#console').style.height = options.consoleHeight || 300 + "px"
             document.querySelector('#controls>*:last-child').style.display = options.autoUpdate ? "none" : "unset"
         }
         require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor/min/vs' } }); window.MonacoEnvironment = { getWorkerUrl: () => proxy }; let proxy = URL.createObjectURL(new Blob([`self.MonacoEnvironment = {baseUrl: 'https://unpkg.com/monaco-editor/min/'};importScripts('https://unpkg.com/monaco-editor/min/vs/base/worker/workerMain.js');`], { type: 'text/javascript' })); require(["vs/editor/editor.main"], function () {
@@ -533,6 +225,22 @@
                 theme: 'atom',
                 fontSize: "12px",
                 automaticLayout: true,
+            });
+            editorJS.addAction({
+                id: "askAI",
+                label: "Ask AI about selection",
+                keybindings: [
+                    monaco.KeyMod.CtrlCmd | monaco.KeyMod.Alt | monaco.KeyCode.KeyA,
+                ],
+                precondition: null,
+                keybindingContext: null,
+                contextMenuGroupId: "navigation",
+                contextMenuOrder: 1.5,
+                run: function (ed) {
+                    let selection = ed.getModel().getValueInRange(ed.getSelection())
+                    let message = prompt('ask ai')
+                    functions.askAI(`Here is my code: \`\`\`${selection}\`\`\`, ` + message)
+                },
             });
             editorHTML = ace.edit('editorHTML')
             var langTools = ace.require("ace/ext/language_tools");
@@ -562,6 +270,11 @@
                 element.insertAdjacentElement('afterEnd', e)
             })
             window.timeSinceUpdate = 0;
+            document.querySelector('#closeAiPopup').addEventListener('click', (e) => {
+                document.querySelector('#aiPopup').style.display = "none"
+                document.querySelector('#closeAiPopup').style.display = "none"
+            })
+            //functions
             functions.updateFrame = function (save) {
                 timeSinceUpdate = options.timeBeforeUpdate * 1000
 
@@ -569,18 +282,146 @@
                     functions.autoSave();
                 }
             }
+            functions.quickUpdate = function () {
+                frame.src = `data:text/html;base64,${window.btoa(unescape(encodeURIComponent(editorHTML.env.editor.getValue() + injectScript + "<script>try{" + editorJS.getValue() + "}catch(error){console.error(error)}<\/script>")))}`;
+            }
+            window.conversation = [];
+            window.fullText = ""
+            functions.askAI = function (query, resetConvo = true) {
+                document.querySelector('#aiPopup').style.display = "block"
+                document.querySelector('#closeAiPopup').style.display = "block"
+                if (resetConvo) {
+                    fullText = ""
+                    conversation = [];
+                } else {
+                    fullText += "\n\n"
+                }
+                conversation.push({ "role": "user", "content": query })
+                fetch("https://ai.fakeopen.com/v1/chat/completions", {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer pk-this-is-a-real-free-pool-token-for-everyone',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        prompt: query,
+                        messages: conversation,
+                        max_tokens: 100,
+                        temperature: 0.5,
+                        n: 1,
+                        stop: '\n',
+                        model: "gpt-3.5-turbo",
+                        stream: true
+                    }),
+                }).then(response => {
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder('utf-8');
+
+                    return reader.read().then(function processText({ done, value }) {
+                        if (done) {
+                            console.log('[DONE]');
+                            console.log(fullText)
+                            conversation.push({ "role": "user", "content": fullText })
+                            let reply = document.createElement('input');
+                            reply.classList.add("reply");
+                            reply.placeholder = "respond..."
+                            document.querySelector("#aiPopup").appendChild(reply)
+                            document.querySelector('input.reply').addEventListener('keydown', (e) => {
+                                if (e.key == "Enter") {
+                                    functions.askAI(e.target.value, false)
+                                    e.target.remove()
+                                }
+                            })
+                            return;
+                        }
+                        // try {
+                        let v = decoder.decode(value)
+                        if (v.split('\n').length > 2) {
+                            v.split('\n').forEach(section => {
+                                if (section !== "" && section != "data: [DONE]") {
+                                    if (JSON.parse(section.replaceAll('data: ', '')).choices[0].finish_reason !== "stop") {
+                                        if (JSON.parse(section.replaceAll("data: ", "").replaceAll("[DONE]", "")).choices[0].delta.content !== undefined) {
+                                            console.log(JSON.parse(section.replaceAll("data: ", "").replaceAll("[DONE]", "")).choices[0].delta.content);
+                                            fullText += JSON.parse(section.replaceAll("data: ", "").replaceAll("[DONE]", "")).choices[0].delta.content;
+                                            document.querySelectorAll('#aiPopup>pre').forEach(element => {
+                                                element.env.editor.destroy()
+                                            })
+                                            document.querySelector('#aiPopup').innerHTML = functions.processTextString(fullText)
+                                            if (options.aiAce || false) {
+                                                document.querySelectorAll('#aiPopup>textarea').forEach(element => {
+                                                    let editor = ace.edit(element, {
+                                                        enableBasicAutocompletion: false,
+                                                        enableSnippets: false,
+                                                        enableLiveAutocompletion: false,
+                                                        enableEmmet: false,
+                                                        showPrintMargin: false,
+                                                        customScrollbar: true,
+                                                        readOnly: true
+                                                    });
+                                                    editor.session.setMode('ace/mode/' + element.dataset.lang)
+                                                    editor.setTheme("ace/theme/one_dark");
+                                                })
+                                            }
+                                        }
+                                    }
+                                }
+                            })
+                        } else {
+                            if (v != "data: [DONE]") {
+                                console.log(JSON.parse(v.replaceAll("data: ", "").replaceAll("[DONE]", "")).choices[0].delta.content);
+                            }
+                        }
+                        // } catch (error) {
+                        //     console.error(error)
+                        //     console.log(decoder.decode(value))
+                        // }
+                        return reader.read().then(processText);
+                    });
+                });
+            }
             setInterval(() => {
                 if (timeSinceUpdate !== 0) {
                     timeSinceUpdate -= 500
                 } else {
-                    frame.src = `data:text/html;base64,${window.btoa(unescape(encodeURIComponent(editorHTML.env.editor.getValue() + injectScript + "<script>try{" + editorJS.getValue() + "}catch(error){console.error(error)}<\/script>")))}`;
+                    frame.src = `data:text/html;base64,${window.btoa(unescape(encodeURIComponent(editorHTML.env.editor.getValue() + injectScript + "<script type='module'>try{" + editorJS.getValue() + "}catch(error){console.error(error)}<\/script>")))}`;
                     if (window.options.autoClear) {
                         document.getElementById('log').innerHTML = ""
                     }
                     timeSinceUpdate -= 500
                 }
-
             }, 500)
+            functions.processTextString = function (inputText) {
+                let ace = options.aiAce || false
+                inputText = inputText.replaceAll('>', '&gt;').replaceAll('<', '&lt;')
+
+                if (ace) inputText = inputText.replace(/\n/g, '<bnr>');
+                var codeBlockRegex = /```([\s\S]*?)```/g;
+                var codeBlocks = inputText.match(codeBlockRegex);
+                if (codeBlocks) {
+                    for (let codeBlock of codeBlocks) {
+                        var codeContent = codeBlock.slice(3, -3).trim();
+                        if (ace) codeContent = codeContent.replaceAll("<bnr>", "\n")
+                        codeContent = codeContent.split('\n');
+                        let temp = codeContent.splice(0, 1);
+                        codeContent = codeContent.join("\n")
+                        if (ace) {
+                            var codeElement = `<textarea data-lang="${temp}">${codeContent}</textarea>`;
+                        } else {
+                            var codeElement = `
+                            <code data-lang="${temp}">${codeContent}
+                                <svg onclick="navigator.clipboard.writeText(event.target.parentElement.innerText)" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg>
+                            </code>`;
+                        }
+                        inputText = inputText.replace(codeBlock, codeElement);
+                    }
+                }
+                if (ace) {
+                    inputText = inputText.replaceAll('<bnr>', '<br>');
+                } else {
+                    inputText = inputText.replaceAll('\n', '<br>');
+                }
+                return inputText;
+            }
             functions.clearConsole = function () {
                 document.getElementById('log').innerHTML = ""
             }
@@ -590,6 +431,14 @@
             }
             functions.fullscreen = function () {
                 frame.classList.toggle('fullscreen')
+            }
+            functions.openChangelog = function () {
+                new Popup({
+                    title: 'Changelog',
+                    plainText: false,
+                    clickBackdropToClose: true,
+                    content: `<span class="changelog">${changelog.replaceAll("\n", "<br>")}</span>`
+                })
             }
             functions.formatWorkspace = function () {
                 editorHTML.setValue(html_beautify(editorHTML.getValue()))
@@ -635,24 +484,52 @@
             functions.generateHTML = function (type) {
                 if (type == "save") {
                     var html = ""
-
+                    let totalBytes = 0;
+                    for (const key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            totalBytes += localStorage.getItem(key).length;
+                        }
+                    }
+                    const totalKilobytes = (totalBytes / 1024).toFixed(2);
+                    html += `<div class="storageDisplay">${totalKilobytes} KB out of 9,000 KB (${(totalKilobytes / 45).toFixed(1)}%)<br><progress min='0' max='4500' value="${totalKilobytes}"></div>`
                     for (let i = 0; i < save.length; i++) {
                         const s = save[i];
-                        html += `<div class="menuItem save" onclick="functions.modifySave('overwrite', ${i})" oncontextmenu="event.preventDefault(); functions.modifySave('remove', ${i})">${s.name ? s.name : "Empty"}</div>`;
+                        let size = functions.getStorageSize(JSON.stringify(s))
+                        html += `<div title="${size}" class="menuItem save" onclick="functions.modifySave('overwrite', ${i})" oncontextmenu="event.preventDefault(); functions.modifySave('remove', ${i})">${s.name ? s.name : "Empty"}<br><span>${size}</span></div>`;
                     }
                     html += `<div class="menuItem save" onclick="functions.modifySave('new')">+</div>`
                     return html
                 } else if (type == "load") {
                     var html = ""
+                    let totalBytes = 0;
+                    for (const key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            totalBytes += localStorage.getItem(key).length;
+                        }
+                    }
+                    const totalKilobytes = (totalBytes / 1024).toFixed(2);
+                    html += `<div class="storageDisplay">${totalKilobytes} KB out of 9,000 KB (${(totalKilobytes / 90).toFixed(1)}%)<br><progress min='0' max='9000' value="${totalKilobytes}"></div>`
                     if (recent && recent.name) {
                         html += `<div class="menuItem save" onclick="functions.modifySave('load', 'recent')">${recent.name}</div>`
                     }
                     for (let i = 0; i < save.length; i++) {
                         const s = save[i];
-                        html += `<div class="menuItem save" onclick="functions.modifySave('load', ${i})">${s.name ? s.name : "Empty"}</div>`;
+                        let size = functions.getStorageSize(JSON.stringify(s))
+                        html += `<div class="menuItem save" onclick="functions.modifySave('load', ${i})">${s.name ? s.name : "Empty"}<br><span>${size}</span></div>`;
                     }
                     return html
                 }
+            }
+            functions.getStorageSize = function (str) {
+                const bytes = new Blob([str]).size;
+                const units = ["bytes", "KB", "MB", "GB", "TB"];
+                let size = bytes;
+                let unitIndex = 0;
+                while (size >= 1024 && unitIndex < units.length - 1) {
+                    size /= 1024;
+                    unitIndex++;
+                }
+                return `${size.toFixed(2)} ${units[unitIndex]}`;
             }
             functions.modifySave = function (f, id) {
                 if (f == "overwrite") {
@@ -932,6 +809,22 @@
                     }))
                 }
             }
+        }
+
+        functions.setConsoleHeight = function () {
+            var newConsoleHeight = prompt("Set Console Height.", options.consoleHeight || 0)
+            if (parseFloat(newConsoleHeight) !== NaN) {
+                let newC = parseFloat(newConsoleHeight);
+                if (newC >= 100 && newC <= 350) {
+                    options.consoleHeight = Math.round(newC)
+                    document.querySelector('#console').style.height = newC + "px"
+                    localStorage.setItem('ashcodeData', JSON.stringify({
+                        save: save,
+                        recent: recent,
+                        options: options
+                    }))
+                } else alert('please enter a value greater than 100 and less than 350')
+            } else alert('please make sure the value you entered a number')
         }
 
         functions.updateAutoUpdateTimer = function () {

@@ -1,0 +1,439 @@
+
+:root {
+    --consoleHeight: 300px;
+    background-color: #282c34;
+    margin: 0px;
+    font-family: Consolas, 'Courier New', monospace;
+}
+
+#editorHTML {
+    position: absolute;
+    top: env(titlebar-area-height, 20px);
+    left: 0px;
+    width: 100%;
+    height: calc(49.9% - env(titlebar-area-height, 20px));
+    border-bottom: solid white 10px;
+}
+
+#editorJS {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+}
+
+#container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    resize: horizontal;
+}
+
+iframe {
+    position: fixed;
+    top: env(titlebar-area-height, 20px);
+    right: 0;
+    width: 50%;
+    height: calc(100% - env(titlebar-area-height, 20px));
+    z-index: -3;
+    background-color: white;
+    box-shadow: 0px 0px 4px 1px black inset;
+}
+
+iframe.fullscreen {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+iframe.fullscreen+#fullscreenButton {
+    display: block;
+}
+
+#fullscreenButton {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    display: none;
+    z-index: 1001;
+    background-color: rgba(0, 0, 0, 0.1);
+    border: none;
+    border-bottom-right-radius: 5px;
+    -webkit-app-region: no-drag;
+
+}
+
+#controls {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 999;
+    width: 100%;
+    height: env(titlebar-area-height, 20px);
+    padding-left: 35px;
+    -webkit-app-region: drag;
+}
+
+#controls>img {
+    height: 20px;
+    display: inline;
+    position: absolute;
+    left: 7.5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#controls>button {
+    -webkit-app-region: no-drag;
+    /* background-color: rgba(255, 255, 255, 1); */
+    /* border: black solid 1px; */
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: transparent;
+    height: env(titlebar-area-height, 20px);
+    box-sizing: border-box;
+    border: transparent solid 1px;
+}
+
+#controls>button:hover {
+    border: dashed white 1px;
+}
+
+#consoleControls>button {
+    background-color: rgba(255, 255, 255, 1);
+    border: black solid 1px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: transparent;
+    height: 20px;
+}
+
+.dropdown {
+    position: absolute;
+    margin: 0px;
+    padding: 0px;
+    background-color: #282c34;
+    border: 1px solid black;
+    border-radius: 5px;
+    display: none;
+    width: 200px;
+    text-align: left;
+}
+
+.subMenu {
+    position: relative;
+}
+
+.subMenu>.dropdown {
+    transform: translateX(95%);
+    filter: none;
+    position: absolute;
+    top: 0px;
+}
+
+.subMenu::after {
+    content: ">";
+    position: absolute;
+    right: 10px;
+}
+
+.dropdown>span:hover {
+    background-color: #1e2127;
+    cursor: pointer;
+}
+
+.dropdown>span {
+    width: 100%;
+    display: block;
+    border-radius: 5px;
+    padding-left: 6px;
+    box-sizing: border-box;
+}
+
+#controls>button:hover>.dropdown,
+#controls>button>.dropdown:hover,
+.subMenu:hover>.dropdown,
+.subMenu>.dropdown:hover {
+    display: block;
+}
+
+.dropdown>hr {
+    border: solid 1px lightgray;
+    background: lightgray;
+    border-radius: 100px;
+    margin: 2px;
+}
+
+
+.dropdown>span[data-value]::before {
+    padding-right: 6px;
+    padding-left: 3px;
+}
+
+.dropdown>span[data-value="false"]::before {
+    content: "☐";
+}
+
+.dropdown>span[data-value="true"]::before {
+    content: "⮽";
+}
+
+.popup-container,
+.popup-header,
+.popup-close {
+    color: white;
+    background-color: #282c34;
+}
+
+.popup-content::-webkit-scrollbar {
+    width: 1px;
+}
+
+.popup-content {
+    z-index: 999999999999999 !important;
+    grid-template-rows: repeat(3, 1fr);
+    background-color: #282c34;
+    color: white;
+}
+
+.popup-content:not(:has(.changelog)) {
+    display: grid;
+    overflow-x: hidden;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+}
+
+.popup-content>.menuItem {
+    background-color: #2d313a;
+    height: 80px;
+    text-align: center;
+    margin: 3px;
+    border-radius: 3px;
+    transition: 100ms;
+    cursor: pointer;
+    border: dashed 1px transparent;
+    text-align: center;
+
+}
+
+.menuItem>span {
+    color: gray;
+}
+
+.storageDisplay {
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    color: white;
+}
+
+.popup-content>.menuItem:hover {
+    background-color: #333842;
+    border: dashed 1px white;
+}
+
+
+#console {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    z-index: 0;
+    width: 50%;
+    height: var(--consoleHeight);
+    background-color: #222;
+    color: #fff;
+    overflow-y: auto;
+}
+
+#console>#log {
+    color: white;
+    overflow-y: scroll;
+    height: calc(100% - 40px);
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#consoleControls {
+    height: 20px;
+    width: 100%;
+    background-color: black;
+}
+
+#console>input {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    background-color: black;
+    color: white;
+    height: 20px;
+    font-family: Consolas, 'Courier New', monospace;
+
+}
+
+.message {
+    background-color: rgb(0, 119, 198);
+    padding-left: 10px;
+    border-bottom: solid 3px rgb(1, 97, 161);
+
+}
+
+.info {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 0px 5px;
+
+}
+
+.infoB {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 0px 5px;
+    border-bottom: solid 3px rgba(255, 255, 255, 0.2);
+}
+
+.error {
+    background-color: #b71c1c;
+    padding: 0px 5px;
+    border-bottom: solid 3px #861515;
+
+}
+
+.error::before {
+    content: "⮾";
+    font-weight: bold;
+    margin-left: 10px;
+    color: #fff;
+    margin-right: 10px;
+}
+
+.warn {
+    background-color: #ff9800;
+    padding: 5px;
+    border-bottom: solid 3px #b86f01;
+}
+
+.warn::before {
+    content: "⚠";
+    font-weight: bold;
+    margin-left: 10px;
+    color: #fff;
+    margin-right: 10px;
+}
+
+input[type="text"] {
+    background-color: #444 !important;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#aiPopup {
+    position: fixed;
+    right: 10px;
+    z-index: 9999;
+    top: calc(env(titlebar-area-height, 30px) + 10px);
+    width: calc(50% - 20px);
+    height: calc(100% - 70px);
+    box-sizing: border-box;
+    color: white;
+    border-radius: 3px;
+    overflow: scroll;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #282c34;
+    box-shadow: 0px 0px 15px 5px black;
+    padding: 6px;
+    padding-top: 40px;
+    display: none;
+}
+
+button#closeAiPopup {
+    appearance: none;
+    border: none;
+    content: "X";
+    position: fixed;
+    top: calc(env(titlebar-area-height, 30px) + 10px);
+    left: calc(50% + 10px);
+    padding: 5px 13px;
+    margin: 8px;
+    background-color: rgb(104, 104, 104);
+    border-radius: 5px;
+    z-index: 10000;
+    display: none;
+}
+
+#aiPopup>code {
+    appearance: none;
+    background-color: #2d313a;
+    font-family: Consolas, 'Courier New', monospace;
+    display: inline-block;
+    border-radius: 3px;
+    border: none;
+    padding: 4px;
+    resize: none;
+    position: relative;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#aiPopup>pre {
+    width: 100%;
+    height: 200px;
+}
+
+#aiPopup::-webkit-scrollbar {
+    display: none;
+}
+code::before {
+    content:attr(data-lang);
+    color: white;
+    position: absolute;
+    left: 0px;
+    top: -20px;
+    width: 100%;
+    padding: 3px;
+    box-sizing: border-box;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    background-color: #202329;
+    z-index: 10001;
+}
+code > svg {
+    position: absolute;
+    top: -11px;
+    right: 5px;
+    fill: white;
+    z-index: 10002;
+}
+code > svg * {
+    pointer-events: none;
+}
+code > svg:hover {
+    fill: lightgrey;
+    cursor: pointer;
+}
+.reply {
+    display: block;
+    background-color: #1e2127;
+    border: none;
+    border-radius: 3px;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    color: white;
+    font-family: Consolas, 'Courier New', monospace;
+}

@@ -900,6 +900,7 @@
 
         functions.getCloud = function () {
             functions.getCloudStore().then(data => {
+                if (data == "error") return
                 let html = `Are you sure you want to download this saved data?<br>Uploaded at: ${new Date(data.date).toLocaleString()}`
                 html += `<br><input type="checkbox" id="projectsCloudDownload" checked><label for="projectsCloudDownload">Projects: ${data.save.length}</label>`
                 html += "<div class='projectList'>"
@@ -983,11 +984,19 @@
         })
         functions.getCloudStore = async function () {
             console.log(user.email)
+            if (user == null) {
+                functions.showToast("Not Signed In!", 3000);
+                return "error"
+            }
             const ref = doc(db, "cloud", user.email)
             const snap = await getDoc(ref)
             return snap.data()
         }
         functions.uploadCloudStore = async function () {
+            if (user == null) {
+                functions.showToast("Not Signed In!", 3000);
+                return
+            }
             const ref = doc(db, "cloud", user.email)
             setDoc(ref, { save, options, date: Date.now() }).catch(error => {
                 functions.showToast(error)

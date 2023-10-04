@@ -187,6 +187,10 @@ iframe.fullscreen+#fullscreenButton {
 .dropdown>span[data-value="true"]::before {
     content: "⮽";
 }
+.dropdown>span.disabled {
+    pointer-events: none;
+    color: gray;
+}
 
 .popup-container,
 .popup-header,
@@ -414,7 +418,7 @@ code::before {
 }
 code > svg {
     position: absolute;
-    top: -11px;
+    top: -15.5px;
     right: 5px;
     fill: white;
     z-index: 10002;
@@ -436,4 +440,39 @@ code > svg:hover {
     box-sizing: border-box;
     color: white;
     font-family: Consolas, 'Courier New', monospace;
+}
+
+#toastContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    max-width: 300px;
+    z-index: 99999;
+}
+
+.toast {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transform: translateY(100%);
+    display: flex;
+    gap: 9px;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.projectList {
+    max-height: 100px;
+    overflow-y: scroll;
+    border: solid 1px white;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 10px 0;
 }

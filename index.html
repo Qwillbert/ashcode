@@ -6,9 +6,12 @@
     <title>Ash-code</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <link rel="manifest" href="manifest.json">
-    <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <!-- imports, monaco-->
     <link rel="stylesheet" type="text/css" data-name="vs/editor/editor.main"
         href="https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/editor/editor.main.css">
+    <!-- imports, ace-->
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.15.2/src-min-noconflict/ace.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.15.2/src-min-noconflict/mode-html.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ace-builds@1.15.2/src-min-noconflict/ext-language_tools.js"></script>
@@ -18,8 +21,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-html.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+    <!-- imports, super simple popup-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/super-simple-popup@latest/index.css">
-    <link rel="stylesheet" href="style.css">
+    <!-- imports, firebase + gapi-->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
     <script>
         var editorJS, editorHTML;
         window.save = [{}];
@@ -131,21 +139,32 @@
                     <div class="dropdown">
                         <span onclick="functions.importAll()">Import projects from file</span>
                         <span onclick="functions.importWorkspace()">Import Workspace from HTML File</span>
-                        <span onclick="location.href = 'projectViewer.html?import'">Import projects from Project Gallery</span>
+                        <span onclick="location.href = 'projectViewer.html?import'">Import projects from Project
+                            Gallery</span>
                     </div>
                 </span>
                 <span class="subMenu">Export
                     <div class="dropdown">
                         <span onclick="functions.exportAll()">Export all projects to file</span>
                         <span onclick="functions.downloadWorkspace()">Download current workspace as HTML</span>
-                        <span onclick="location.href = 'projectViewer.html?export'">Export projects to Project Gallery</span>
+                        <span onclick="location.href = 'projectViewer.html?export'">Export projects to Project
+                            Gallery</span>
                     </div>
                 </span>
                 <span class="subMenu">Preferences
                     <div class="dropdown">
                         <span onclick="functions.updateTabSize()">Update Tab Size</span>
                         <span onclick="functions.toggleEnableEmmet()" data-value=true>Enable Emmet</span>
-                        <span onclick="functions.toggleSimpleOption(event, 'aiAce')" data-name="aiAce" data-value=false>Use Ace for AI code</span>
+                        <span onclick="functions.toggleSimpleOption(event, 'aiAce')" data-name="aiAce"
+                            data-value=false>Use Ace for AI code</span>
+                    </div>
+                </span>
+                <span class="subMenu" title="BETA">ℹ️ Cloud Data
+                    <div class="dropdown">
+                        <span id="googleSignIn">Sign in with Google</span>
+                        <span id="googleSignOut" class="disabled">Sign out of Google</span>
+                        <span onclick="functions.uploadCloudStore()">Upload Cloud Data</span>
+                        <span onclick="functions.getCloud()">Download Cloud Data</span>
                     </div>
                 </span>
             </div>
@@ -163,18 +182,23 @@
                 <span onclick="functions.fullscreen()">Fullscreen</span>
                 <span class="subMenu">Auto-Update
                     <div class="dropdown">
-                        <span onclick="functions.toggleSimpleOption(event, 'autoUpdate')" data-value="true" data-name="autoUpdate">Auto Update enabled</span>
+                        <span onclick="functions.toggleSimpleOption(event, 'autoUpdate')" data-value="true"
+                            data-name="autoUpdate">Auto Update enabled</span>
                         <span onclick="functions.updateAutoUpdateTimer()">Update time before auto-update</span>
                     </div>
                 </span>
+                <span onclick="functions.toggleSimpleOption(event, 'jsMode')" data-value="false"
+                    data-name="jsMode">Javascript only</span>
                 <span onclick="functions.openChangelog()">View Changelog</span>
             </div>
         </button>
         <button>Console
             <div class="dropdown">
                 <span onclick="functions.toggleConsole()" data-value=true>Enable Console</span>
-                <span onclick="functions.toggleSimpleOption(event, 'autoClear')" data-value=false data-name="autoClear">Clear Console on Update</span>
-                <span onclick="functions.toggleSimpleOption(event, 'infiniteObjectNesting')" data-value=false data-name="infiniteObjectNesting">Allow Infinite Object Nesting</span>
+                <span onclick="functions.toggleSimpleOption(event, 'autoClear')" data-value=false
+                    data-name="autoClear">Clear Console on Update</span>
+                <span onclick="functions.toggleSimpleOption(event, 'infiniteObjectNesting')" data-value=false
+                    data-name="infiniteObjectNesting">Allow Infinite Object Nesting</span>
                 <span onclick="functions.setConsoleHeight()">Set Console Height</span>
             </div>
         </button>
@@ -195,6 +219,7 @@
         <div id="log"></div>
         <input type="text" id="send" autocomplete="off" placeholder="document.write('hello')">
     </div>
+    <div id="toastContainer"></div>
     <script type="module">
         "use strict";
         import Popup from 'https://cdn.skypack.dev/super-simple-popup'
@@ -467,8 +492,8 @@
                     })
                 }
             }
-            functions.autoSave = function () {
-                if (options.autoSave) {
+            functions.autoSave = function (force = false) {
+                if (options.autoSave || force) {
                     window.recent = {};
                     window.recent.js = encodeURIComponent(editorJS.getValue());
                     window.recent.html = encodeURIComponent(editorHTML.getValue());
@@ -576,19 +601,23 @@
             }
         });
         document.addEventListener("keydown", (e) => {
-            if (e.key.toLowerCase() == "s" && e.ctrlKey) {
+            if (e.key == "s" && e.ctrlKey) {
                 e.preventDefault();
                 functions.saveAndLoad(true);
             }
-            if (e.key.toLowerCase() == "o" && e.ctrlKey) {
+            if (e.key == "S" && e.ctrlKey) {
+                e.preventDefault();
+                functions.uploadCloudStore()
+            }
+            if (e.key == "o" && e.ctrlKey) {
                 e.preventDefault();
                 functions.saveAndLoad(false);
             }
-            if (e.key.toLowerCase() == "i" && e.ctrlKey) {
+            if (e.key == "I" && e.ctrlKey) {
                 e.preventDefault();
                 document.querySelector('span[onclick="functions.toggleConsole()"]').click()
             }
-            if (e.key.toLowerCase() == "f" && e.ctrlKey) {
+            if (e.key == "F11") {
                 e.preventDefault();
                 functions.fullscreen()
             }
@@ -778,6 +807,13 @@
                 recent: recent,
                 options: options
             }))
+            if (options.jsMode) {
+                document.querySelector('#editorHTML').style.display = "none"
+                document.querySelector('#editorJS').style.height = "calc(99.9% - env(titlebar-area-height, 20px))"
+            } else {
+                document.querySelector('#editorHTML').style.display = "block"
+                document.querySelector('#editorJS').style.height = "50%"
+            }
             document.querySelector('#controls>*:last-child').style.display = options.autoUpdate ? "none" : "unset"
         }
 
@@ -840,6 +876,129 @@
                     }))
                 } else alert('please enter a time greater or equal than 0 seconds and less than 10 seconds');
             } else alert('Please make sure that the time entered is a number')
+        }
+
+        functions.showToast = function (message, duration = 5000) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = message;
+            toastContainer.appendChild(toast);
+            toast.offsetHeight;
+            toast.classList.add('show');
+            let t = setTimeout(() => {
+                toast.style.opacity = 0;
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 300);
+            }, duration);
+            toast.onclick = (e) => {
+                toastContainer.removeChild(toast);
+                clearTimeout(t)
+            }
+        }
+
+        functions.getCloud = function () {
+            functions.getCloudStore().then(data => {
+                let html = `Are you sure you want to download this saved data?<br>Uploaded at: ${new Date(data.date).toLocaleString()}`
+                html += `<br><input type="checkbox" id="projectsCloudDownload" checked><label for="projectsCloudDownload">Projects: ${data.save.length}</label>`
+                html += "<div class='projectList'>"
+                data.save.forEach((item) => {
+                    html += item.name + "<br>";
+                })
+                html += `</div><input type="checkbox" id="optionsCloudDownload" checked><label for="optionsCloudDownload">Options</label><div class='projectList'>`;
+                for (let o in data.options) {
+                    html += `${o}: ${data.options[o]}<br>`
+                }
+                html += "</div><button>Download</button>"
+                new Popup({
+                    title: 'Saved Data',
+                    plainText: false,
+                    clickBackdropToClose: true,
+                    content: html
+                })
+                document.querySelector('.projectList+button').addEventListener('click', () => {
+                    if (document.getElementById('projectsCloudDownload')) {
+                        save = data.save;
+                    }
+                    if (document.getElementById('optionsCloudDownload')) {
+                        options = data.options;
+                    }
+                    functions.autoSave(true);
+                    window.reload()
+                })
+            })
+        }
+    </script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getFirestore, addDoc, collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+        import { GoogleAuthProvider, signInWithPopup, getAuth, getAdditionalUserInfo, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLpChEYY5dCFNZmfLVmdaG_sY6FRb8zSU",
+            authDomain: "ashcode-cfc1b.firebaseapp.com",
+            projectId: "ashcode-cfc1b",
+            storageBucket: "ashcode-cfc1b.appspot.com",
+            messagingSenderId: "98541478011",
+            appId: "1:98541478011:web:cc94bc4a49705d035582de"
+        };
+        var user = null
+        const app = initializeApp(firebaseConfig);
+        initializeApp(firebaseConfig);
+        var db = getFirestore(app);
+        const auth = getAuth();
+        onAuthStateChanged(auth, newuser => {
+            if (newuser !== null) {
+                console.log("YIPIIE !!!!!", newuser)
+                user = newuser;
+                document.querySelector('#googleSignIn').classList.add("disabled")
+                document.querySelector('#googleSignOut').classList.remove("disabled")
+                functions.showToast(`Signed in as: ${user.displayName}`, 2500)
+            }
+        })
+        document.querySelector('#googleSignIn').addEventListener('click', function () {
+            const provider = new GoogleAuthProvider();
+            setPersistence(auth, browserLocalPersistence)
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const credential = GoogleAuthProvider.credentialFromResult(result);
+                    const token = credential.accessToken;
+                    user = result.user;
+                    console.log(user)
+                    functions.showToast(`<img src="${user.photoURL}"> Signed in as: ${user.displayName}`, 5000)
+                    document.querySelector('#googleSignIn').classList.add("disabled")
+                    document.querySelector('#googleSignOut').classList.remove("disabled")
+                }).catch((error) => {
+                    console.error(error)
+                });
+        })
+        document.querySelector('#googleSignOut').addEventListener('click', () => {
+            signOut(auth);
+            functions.showToast("Signed Out!", 2500)
+            document.querySelector('#googleSignIn').classList.remove("disabled")
+            document.querySelector('#googleSignOut').classList.add("disabled")
+        })
+        functions.getCloudStore = async function () {
+            console.log(user.email)
+            const ref = doc(db, "cloud", user.email)
+            const snap = await getDoc(ref)
+            return snap.data()
+        }
+        functions.uploadCloudStore = async function () {
+            const ref = doc(db, "cloud", user.email)
+            setDoc(ref, { save, options, date: Date.now() }).catch(error => {
+                functions.showToast(error)
+            })
+            functions.showToast("Data Uploaded!")
+            return
+        }
+        let ogerror = console.error
+        console.error = function (param) {
+            ogerror(param)
+            functions.showToast(`Error: ${param}`, 10000)
         }
     </script>
 </body>

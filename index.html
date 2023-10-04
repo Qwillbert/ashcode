@@ -918,14 +918,14 @@
                     content: html
                 })
                 document.querySelector('.projectList+button').addEventListener('click', () => {
-                    if (document.getElementById('projectsCloudDownload')) {
+                    if (document.getElementById('projectsCloudDownload').checked) {
                         save = data.save;
                     }
-                    if (document.getElementById('optionsCloudDownload')) {
+                    if (document.getElementById('optionsCloudDownload').checked) {
                         options = data.options;
                     }
                     functions.autoSave(true);
-                    window.reload()
+                    window.location.reload()
                 })
             })
         }

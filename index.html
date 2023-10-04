@@ -984,7 +984,7 @@
         })
         functions.getCloudStore = async function () {
             console.log(user.email)
-            if (user == null) {
+            if (typeof user == "undefined") {
                 functions.showToast("Not Signed In!", 3000);
                 return "error"
             }
@@ -993,7 +993,7 @@
             return snap.data()
         }
         functions.uploadCloudStore = async function () {
-            if (user == null) {
+            if (typeof user == "undefined") {
                 functions.showToast("Not Signed In!", 3000);
                 return
             }

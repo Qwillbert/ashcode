@@ -246,6 +246,9 @@ iframe.fullscreen+#fullscreenButton {
     border: dashed 1px white;
 }
 
+.popup-title, .popup-container {
+    background-color: #282c34;
+}
 
 #console {
     position: fixed;

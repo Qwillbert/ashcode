@@ -210,7 +210,7 @@ iframe.fullscreen+#fullscreenButton {
     color: white;
 }
 
-.popup-content:not(:has(.changelog)) {
+.popup-content:not(:has(.changelog)):not(:has(#projectsCloudDownload)) {
     display: grid;
     overflow-x: hidden;
     grid-template-columns: repeat(3, 1fr);

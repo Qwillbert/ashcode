@@ -247,7 +247,7 @@ iframe.fullscreen+#fullscreenButton {
 }
 
 .popup-title, .popup-container {
-    background-color: #282c34;
+    background-color: #282c34 !important;
 }
 
 #console {

@@ -209,6 +209,9 @@ iframe.fullscreen+#fullscreenButton {
     background-color: #282c34;
     color: white;
 }
+.popup-container {
+    z-index: 9999999999999999999999999 !important;
+}
 
 .popup-content:not(:has(.changelog)):not(:has(#projectsCloudDownload)) {
     display: grid;

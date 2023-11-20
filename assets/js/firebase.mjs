@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getFirestore, addDoc, collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 import { GoogleAuthProvider, signInWithPopup, getAuth, getAdditionalUserInfo, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-import { functions } from "/assets/js/functions.mjs"
+import { functions } from "ashcode/assets/js/functions.mjs"
 
 // Initialize Firebase
 const firebaseConfig = {

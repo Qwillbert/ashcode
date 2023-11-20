@@ -1,5 +1,5 @@
 "use strict";
-import { functions } from "/assets/js/functions.mjs"
+import { functions } from "/ashcode/assets/js/functions.mjs"
 window.functions = functions
 
 export var itemHistory = [];

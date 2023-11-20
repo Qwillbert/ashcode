@@ -1,5 +1,4 @@
-import { setRecentProject, updateLocalStorage } from "../../main.mjs";
-import { frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item } from "/main.mjs"
+import {setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item } from "/ashcode/main.mjs"
 import Popup from 'https://cdn.skypack.dev/super-simple-popup';
 export const functions = {};
 

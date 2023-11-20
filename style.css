@@ -1,7 +1,10 @@
 
 :root {
     --consoleHeight: 300px;
-    background-color: #282c34;
+    --background-color: #282c34;
+    --background-color-alt: #2d313a;
+    --background-color-hover: #1e2127;
+    background-color: var(--background-color);
     margin: 0px;
     font-family: Consolas, 'Courier New', monospace;
 }
@@ -122,7 +125,7 @@ iframe.fullscreen+#fullscreenButton {
     position: absolute;
     margin: 0px;
     padding: 0px;
-    background-color: #282c34;
+    background-color: var(--background-color);
     border: 1px solid black;
     border-radius: 5px;
     display: none;
@@ -148,7 +151,7 @@ iframe.fullscreen+#fullscreenButton {
 }
 
 .dropdown>span:hover {
-    background-color: #1e2127;
+    background-color: var(--background-color-hover);
     cursor: pointer;
 }
 
@@ -196,7 +199,7 @@ iframe.fullscreen+#fullscreenButton {
 .popup-header,
 .popup-close {
     color: white;
-    background-color: #282c34;
+    background-color: var(--background-color);
 }
 
 .popup-content::-webkit-scrollbar {
@@ -206,14 +209,14 @@ iframe.fullscreen+#fullscreenButton {
 .popup-content {
     z-index: 999999999999999 !important;
     grid-template-rows: repeat(3, 1fr);
-    background-color: #282c34;
+    background-color: var(--background-color);
     color: white;
 }
 .popup-container {
     z-index: 9999999999999999999999999 !important;
 }
 
-.popup-content:not(:has(.changelog)):not(:has(#projectsCloudDownload)) {
+.popup-content:not(:has(*[noGrid])) {
     display: grid;
     overflow-x: hidden;
     grid-template-columns: repeat(3, 1fr);
@@ -221,7 +224,7 @@ iframe.fullscreen+#fullscreenButton {
 }
 
 .popup-content>.menuItem {
-    background-color: #2d313a;
+    background-color: var(--background-color-alt);
     height: 80px;
     text-align: center;
     margin: 3px;
@@ -245,12 +248,12 @@ iframe.fullscreen+#fullscreenButton {
 }
 
 .popup-content>.menuItem:hover {
-    background-color: #333842;
+    background-color: var(--background-color-hover);
     border: dashed 1px white;
 }
 
 .popup-title, .popup-container {
-    background-color: #282c34 !important;
+    background-color: var(--background-color) !important;
 }
 
 #console {
@@ -362,7 +365,7 @@ input[type="text"] {
     overflow: scroll;
     font-size: 14px;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #282c34;
+    background-color: var(--background-color);
     box-shadow: 0px 0px 15px 5px black;
     padding: 6px;
     padding-top: 40px;
@@ -386,7 +389,7 @@ button#closeAiPopup {
 
 #aiPopup>code {
     appearance: none;
-    background-color: #2d313a;
+    background-color: var(--background-color-alt);
     font-family: Consolas, 'Courier New', monospace;
     display: inline-block;
     border-radius: 3px;
@@ -419,7 +422,7 @@ code::before {
     box-sizing: border-box;
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
-    background-color: #202329;
+    background-color: var(--background-color-hover);
     z-index: 10001;
 }
 code > svg {
@@ -438,7 +441,7 @@ code > svg:hover {
 }
 .reply {
     display: block;
-    background-color: #1e2127;
+    background-color: var(--background-color-hover);
     border: none;
     border-radius: 3px;
     margin-top: 10px;

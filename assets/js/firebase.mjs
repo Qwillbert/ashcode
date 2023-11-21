@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getFirestore, addDoc, collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 import { GoogleAuthProvider, signInWithPopup, getAuth, getAdditionalUserInfo, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-import { functions } from "/ashcode/assets/js/functions.mjs"
+import { functions } from "/assets/js/functions.mjs"
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -48,7 +48,7 @@ document.querySelector('#googleSignOut').addEventListener('click', () => {
     document.querySelector('#googleSignIn').classList.remove("disabled")
     document.querySelector('#googleSignOut').classList.add("disabled")
 })
-functions.getCloudStore = async function () {
+export async function getCloudStore() {
     console.log(user.email)
     if (typeof user == "undefined") {
         functions.showToast("Not Signed In!", 3000);
@@ -58,13 +58,13 @@ functions.getCloudStore = async function () {
     const snap = await getDoc(ref)
     return snap.data()
 }
-functions.uploadCloudStore = async function () {
+export async function uploadCloudStore (data) {
     if (typeof user == "undefined") {
         functions.showToast("Not Signed In!", 3000);
         return
     }
     const ref = doc(db, "cloud", user.email)
-    setDoc(ref, { save, options, date: Date.now() }).catch(error => {
+    setDoc(ref, data).catch(error => {
         functions.showToast(error)
     })
     functions.showToast("Data Uploaded!")

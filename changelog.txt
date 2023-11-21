@@ -1,0 +1,36 @@
+== 11/20/23 ==
+ - Switching to Vercel
+   - <a href="https://ashcode.vercel.app">https://ashcode.vercel.app</a>
+ - Changed Popups
+ - Made file menu buttons easier to click
+ - Reorganized code again
+
+ == 11/19/23 ==
+ - Fixed many spelling mistakes
+ - Fix and optimize CSS
+ - Download Specific projects individually
+ - Switched to using JS modules for better code management
+
+ == 10/4/23 ==
+ - Added signing in with accounts
+   - Use on multiple devices
+   - Download and upload settings
+   - Sign in with your google account
+   - You can still use locally without an account
+
+ == 9/19/23 ==
+ - Added AI
+   - Ask Questions about your javascript
+   - Option to use Ace for AI generated Code
+
+ == 9/16/23 ==
+ - Added storage meter
+ - Fixed CSS for Chrome and Firefox
+ - Turned into PWA (Progressive Web Application)
+ - Allowed the built in console to receive html elements (note: event listeners and some types of elements, will still produce an error)
+
+ == Roadmap == 
+ - Allow users in PWA mode to "open in Ash-code"
+ - Add CSS generators
+   - drop-shadow
+   - linear-gradient

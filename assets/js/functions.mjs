@@ -1,5 +1,6 @@
-import {setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item } from "/ashcode/main.mjs"
-import Popup from 'https://cdn.skypack.dev/super-simple-popup';
+import {setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item, setOptions, setProjects } from "/main.mjs"
+import { getCloudStore, uploadCloudStore } from "./firebase.mjs";
+import popup from "./popup.mjs";
 export const functions = {};
 
 functions.updateFrame = function (save, timeSinceUpdate) {
@@ -144,11 +145,13 @@ functions.fullscreen = function () {
     frame.classList.toggle('fullscreen')
 }
 functions.openChangelog = function () {
-    new Popup({
-        title: 'Changelog',
-        plainText: false,
-        clickBackdropToClose: true,
-        content: `<span noGrid></span>${changelog.replaceAll("\n", "<br>")}`
+    popup({
+        title: "Changelog",
+        content: `<span noGrid></span>${changelog.replaceAll("\n", "<br>")}`,
+        closeBtn: true,
+        clickToClose: true,
+        closeBtnText: "x",
+        bg: true
     })
 }
 functions.formatWorkspace = function () {
@@ -162,19 +165,23 @@ functions.resetWorkspace = function () {
 functions.saveAndLoad = function (saved) {
     if (saved) {
         let html = functions.generateHTML("save")
-        new Popup({
-            title: 'Save your workspace',
-            plainText: false,
-            clickBackdropToClose: true,
-            content: html
+        popup({
+            title: "Save your workspace",
+            content: html,
+            closeBtn: true,
+            clickToClose: true,
+            closeBtnText: "x",
+            bg: true
         })
     } else {
         let html = functions.generateHTML("load")
-        new Popup({
-            title: 'Load a workspace',
-            plainText: false,
-            clickBackdropToClose: true,
-            content: html
+        popup({
+            title: "Load a workspace",
+            content: html,
+            closeBtn: true,
+            clickToClose: true,
+            closeBtnText: "x",
+            bg: true
         })
     }
 }
@@ -557,7 +564,7 @@ functions.showToast = function (message, duration = 5000) {
 }
 
 functions.getCloud = function () {
-    functions.getCloudStore().then(data => {
+    getCloudStore().then(data => {
         if (data == "error") return
         let html = `<span noGrid></span>Are you sure you want to download this saved data?<br>Uploaded at: ${new Date(data.date).toLocaleString()}`
         html += `<br><input type="checkbox" id="projectsCloudDownload" checked><label for="projectsCloudDownload">Projects: ${data.save.length}</label>`
@@ -570,18 +577,21 @@ functions.getCloud = function () {
             html += `${o}: ${data.options[o]}<br>`
         }
         html += "</div><button>Download</button>"
-        new Popup({
-            title: 'Saved Data',
-            plainText: false,
-            clickBackdropToClose: true,
-            content: html
+        popup({
+            title: "Saved Data",
+            content: html,
+            closeBtn: true,
+            clickToClose: true,
+            closeBtnText: "x",
+            bg: true
         })
         document.querySelector('.projectList+button').addEventListener('click', () => {
             if (document.getElementById('projectsCloudDownload').checked) {
-                save = data.save;
+                setProjects(data.save);
+                
             }
             if (document.getElementById('optionsCloudDownload').checked) {
-                options = data.options;
+                setOptions(data.options);
             }
             functions.autoSave(true);
             window.location.reload()
@@ -590,18 +600,20 @@ functions.getCloud = function () {
 }
 
 functions.getCloudProjects = function () {
-    functions.getCloudStore().then(data => {
+    getCloudStore().then(data => {
         const projects = data.save;
-        let html = `<span noGrid id="projectDownload">Download specific projects<br>Uploaded at: ${new Date(data.date).toLocaleString()}<br>`
+        let html = `<span noGrid id="projectDownload">Download specific projects<br>Uploaded at: ${new Date(data.date).toLocaleString()}<br><br>`
         projects.forEach((project, i) => {
             html += `<input type="checkbox" id="${project.name}-${i}" data-id="${i}"></input><label for="${project.name}-${i}">${project.name}</label><br>`
         })
-        html += "</div><button>Download</button></span>"
-        new Popup({
+        html += "<button>Download</button></span>"
+        popup({
             title: "Download Projects",
-            plainText: false,
-            clickBackdropToClose: true,
-            content: html
+            content: html,
+            closeBtn: true,
+            clickToClose: true,
+            closeBtnText: "x",
+            bg: true
         })
         document.querySelector("#projectDownload>button").addEventListener("click", (e)=>{
             document.querySelectorAll("#projectDownload>input").forEach(input=>{
@@ -611,4 +623,8 @@ functions.getCloudProjects = function () {
             this.showToast("Downloaded projects from Cloud!", 5000)
         })
     })
+}
+
+functions.uploadCloudStore = function () {
+    uploadCloudStore({ save, options, date: Date.now() })
 }

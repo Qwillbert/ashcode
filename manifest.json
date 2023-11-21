@@ -2,7 +2,7 @@
     "name": "Ash-code",
     "short_name": "Ash Code",
     "description": "A lightweight code editor for quickly testing out projects",
-    "start_url": "/ashcode",
+    "start_url": "/",
     "display": "fullscreen",
     "background_color": "#282c34",
     "theme_color": "#282c34",
@@ -17,7 +17,7 @@
     "shortcuts": [
         {
             "name": "Project Viewer",
-            "url": "/ashcode/projectViewer.html",
+            "url": "/projectViewer.html",
             "description": "Share your projects with your friends!",
             "icons": [
                 {

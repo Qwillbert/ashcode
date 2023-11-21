@@ -1,5 +1,5 @@
 "use strict";
-import { functions } from "/ashcode/assets/js/functions.mjs"
+import { functions } from "/assets/js/functions.mjs"
 window.functions = functions
 
 export var itemHistory = [];
@@ -23,42 +23,18 @@ if (localStorage.getItem('ashcodeSave') || localStorage.getItem('ashcodeRecent')
     localStorage.removeItem('ashcodeRecent')
     window.location.reload();
 }
-export var changelog = `
- == 11/19/23 ==
- - Fixed many spelling mistakes
- - Fix and optimize CSS
- - Download Specific projects individually
+export var changelog = ""
+fetch("changelog.txt").then(r=>r.text()).then(data => {
+    changelog = data
+})
 
- == 6/4/23 ==
- - Added signing in with accounts
-   - Use on multiple devices
-   - Download and upload settings
-   - Sign in with your google account
-   - You can still use locally without an account
-
- == 9/19/23 ==
- - Added AI
-   - Ask Questions about your javascript
-   - Option to use Ace for AI generated Code
-
- == 9/16/23 ==
- - Added storage meter
- - Fixed CSS for Chrome and Firefox
- - Turned into PWA (Progressive Web Application)
- - Allowed the built in console to receive html elements (note: event listeners and some types of elements, will still produce an error)
-
- == Roadmap == 
- - Allow users in PWA mode to "open in Ash-code"
- - Many CSS generators
-   - drop-shadow
-   - linear-gradient`
-   export var injectScript = `
+export var injectScript = `
    <!-- Injected by ash-code | Forward Facing Console -->`
-   fetch('assets/js/console.js').then(r => r.text()).then(data => {
+fetch('assets/js/console.js').then(r => r.text()).then(data => {
     injectScript += `<script id="ashcodeInjectedScript">
     ${data}    
     <\/script>`
-   })
+})
 
 if (localStorage.getItem('ashcodeData')) {
     let data = JSON.parse(localStorage.getItem('ashcodeData'));
@@ -85,7 +61,8 @@ export function updateLocalStorage() {
 }
 
 export function setRecentProject(data) { recent = data }
-export function setProjects(data) {save = data}
+export function setProjects(data) { save = data }
+export function setOptions(data) { options = data }
 
 setInterval(() => {
     if (timeSinceUpdate !== 0) {
@@ -156,7 +133,7 @@ require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor/min/vs' } }); w
         let e = document.createElement('hr')
         element.insertAdjacentElement('afterEnd', e)
     })
-    
+
     document.querySelector('#closeAiPopup').addEventListener('click', (e) => {
         document.querySelector('#aiPopup').style.display = "none"
         document.querySelector('#closeAiPopup').style.display = "none"

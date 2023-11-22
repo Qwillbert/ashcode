@@ -90,6 +90,8 @@ functions.askAI = function (query, resetConvo = true) {
                                 }
                             }
                         }
+                    } else {
+                        hljs.highlightAll();
                     }
                 })
             }
@@ -105,32 +107,28 @@ functions.askAI = function (query, resetConvo = true) {
 functions.processTextString = function (inputText) {
     let ace = options.aiAce || false
     inputText = inputText.replaceAll('>', '&gt;').replaceAll('<', '&lt;')
-
-    if (ace) inputText = inputText.replace(/\n/g, '<bnr>');
     var codeBlockRegex = /```([\s\S]*?)```/g;
     var codeBlocks = inputText.match(codeBlockRegex);
     if (codeBlocks) {
         for (let codeBlock of codeBlocks) {
             var codeContent = codeBlock.slice(3, -3).trim();
-            if (ace) codeContent = codeContent.replaceAll("<bnr>", "\n")
             codeContent = codeContent.split('\n');
-            let temp = codeContent.splice(0, 1);
+            let codeLanguage = codeContent.splice(0, 1);
             codeContent = codeContent.join("\n")
             if (ace) {
-                var codeElement = `<textarea data-lang="${temp}">${codeContent}</textarea>`;
+                var codeElement = `<textarea data-lang="${codeLanguage}">${codeContent}</textarea>`;
             } else {
                 var codeElement = `
-                <code data-lang="${temp}">${codeContent}
-                    <svg onclick="navigator.clipboard.writeText(event.target.parentElement.innerText)" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg>
-                </code>`;
+                <span>
+                    <svg onclick="navigator.clipboard.writeText(event.target.nextElementSibling.innerText)" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg>
+                    <pre>
+                     <code data-lang="${codeLanguage}">${codeContent}
+                      </code>
+                </pre>
+                </span><br>`;
             }
             inputText = inputText.replace(codeBlock, codeElement);
         }
-    }
-    if (ace) {
-        inputText = inputText.replaceAll('<bnr>', '<br>');
-    } else {
-        inputText = inputText.replaceAll('\n', '<br>');
     }
     return inputText;
 }

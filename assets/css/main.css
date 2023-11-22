@@ -1,14 +1,21 @@
 @import url(popup.css);
+
 :root {
     --consoleHeight: 300px;
     --background-color: #282c34;
     --background-color-alt: #2d313a;
     --background-color-hover: #1e2127;
     --text-link: #3498db;
-    background-color: var(--background-color);
     margin: 0px;
     font-family: Consolas, 'Courier New', monospace;
+    background: var(--background-color);
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    background-blend-mode: darken;
 }
+
 
 #editorHTML {
     position: absolute;
@@ -16,10 +23,12 @@
     left: 0px;
     width: 100%;
     height: calc(49.9% - env(titlebar-area-height, 20px));
-    border-bottom: solid white 10px;
+    /* border-bottom: solid white 10px; */
+    background-color: transparent;
 }
 
 #editorJS {
+    background-color: transparent;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -160,7 +169,7 @@ iframe.fullscreen+#fullscreenButton {
     width: 100%;
     display: block;
     border-radius: 5px;
-    padding:5px 0;
+    padding: 5px 0;
     padding-left: 6px;
     box-sizing: border-box;
 }
@@ -192,6 +201,7 @@ iframe.fullscreen+#fullscreenButton {
 .dropdown>span[data-value="true"]::before {
     content: "⮽";
 }
+
 .dropdown>span.disabled {
     pointer-events: none;
     color: gray;
@@ -207,6 +217,7 @@ iframe.fullscreen+#fullscreenButton {
     background-color: var(--background-color);
     color: white;
 }
+
 .popup-container {
     z-index: 9999999999999999999999999 !important;
 }
@@ -247,7 +258,8 @@ iframe.fullscreen+#fullscreenButton {
     border: dashed 1px white;
 }
 
-.popup-title, .popup-container {
+.popup-title,
+.popup-container {
     background-color: var(--background-color) !important;
 }
 
@@ -382,7 +394,7 @@ button#closeAiPopup {
     display: none;
 }
 
-#aiPopup>code {
+#aiPopup code {
     appearance: none;
     background-color: var(--background-color-alt);
     font-family: Consolas, 'Courier New', monospace;
@@ -396,18 +408,29 @@ button#closeAiPopup {
     overflow-wrap: break-word;
     max-width: 100%;
     box-sizing: border-box;
+    margin-top: 15px;
 }
 
-#aiPopup>pre {
+#aiPopup>span>pre {
+    white-space: unset;
+}
+
+#aiPopup span  pre.ace_editor {
     width: 100%;
     height: 200px;
+}
+
+#aiPopup span {
+    position: relative;
+    display: inline-block;
 }
 
 #aiPopup::-webkit-scrollbar {
     display: none;
 }
-code::before {
-    content:attr(data-lang);
+
+#aiPopup code::before {
+    content: attr(data-lang);
     color: white;
     position: absolute;
     left: 0px;
@@ -420,20 +443,24 @@ code::before {
     background-color: var(--background-color-hover);
     z-index: 10001;
 }
-code > svg {
+
+svg:has(+ pre) {
     position: absolute;
-    top: -15.5px;
-    right: 5px;
     fill: white;
     z-index: 10002;
+    right: 4px;
+    top: 12.5px;
 }
-code > svg * {
+
+svg:has(+ pre) * {
     pointer-events: none;
 }
-code > svg:hover {
+
+svg:has(+ pre):hover {
     fill: lightgrey;
     cursor: pointer;
 }
+
 .reply {
     display: block;
     background-color: var(--background-color-hover);

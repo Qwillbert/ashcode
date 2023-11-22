@@ -20,13 +20,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify-html.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
-    <!-- imports, super simple popup-->
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/super-simple-popup@latest/index.css"> -->
     <!-- imports, firebase + gapi-->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
     <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <!-- imports, syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
 </head>
 
 <body>
@@ -63,7 +65,7 @@
                             data-value=false>Use Ace for AI code</span>
                     </div>
                 </span>
-                <span class="subMenu" title="BETA">ℹ️ Cloud Data
+                <span class="subMenu">Cloud Data
                     <div class="dropdown">
                         <span id="googleSignIn">Sign in with Google</span>
                         <span id="googleSignOut" class="disabled">Sign out of Google</span>

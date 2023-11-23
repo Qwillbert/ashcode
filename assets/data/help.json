@@ -1,0 +1,36 @@
+{
+    "jsModules": {
+        "title": "Using JS Modules",
+        "body": [
+            "By enabling the \"Use Modules for JS\" option, it allows you to use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules\">Javascript Modules</a> in your code (must be in the javascript editor).",
+            "",
+            "To import a npm package in your code you can use <a href=\"https://www.skypack.dev/\">Skypack.dev</a>. To import the \"Canvas Confetti\" package from npm, you can use the code",
+            "<span>%copy<pre><code data-lang=\"javascript\">%code1</code></pre></span>",
+            "This will work for most npm packages. Here is an example with p5js.",
+            "<span>%copy<pre><code data-lang=\"javascript\">%code2</code></pre></span>"
+        ],
+        "codeblocks": [
+            [
+                "import confetti from 'https://cdn.skypack.dev/canvas-confetti';",
+                "confetti();"
+
+            ],
+            [
+                "import p5 from 'https://cdn.skypack.dev/p5';",
+                "",
+                "function sketch(sketch) {",
+                "    sketch.setup = function () {",
+                "        sketch.createCanvas(400, 400);",
+                "    };",
+                "",
+                "    sketch.draw = function () {",
+                "        sketch.background(200);",
+                "        sketch.line(0, 0, 200, 200);",
+                "    };",
+                "}",
+                "",
+                "new p5(sketch);"
+            ]
+        ]
+    }
+}

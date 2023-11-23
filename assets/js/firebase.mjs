@@ -70,8 +70,3 @@ export async function uploadCloudStore (data) {
     functions.showToast("Data Uploaded!")
     return
 }
-let ogerror = console.error
-console.error = function (param) {
-    ogerror(param)
-    functions.showToast(`Error: ${param}`, 10000)
-}

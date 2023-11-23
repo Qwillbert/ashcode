@@ -6,14 +6,17 @@
     transform: translate(-50%, -50%);
     background-color: #282c34;
     color: white;
-    width: 50em;
-    height: 35em;
+    /* width: 50em; */
+    /* height: 35em; */
+    width: 90%;
+    height: 80%;
     z-index: 10000;
     padding: 10px;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
     margin: 20px 0;
+    overflow: hidden;
 }
 
 .popup-header {

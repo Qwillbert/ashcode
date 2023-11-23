@@ -1,4 +1,4 @@
-import {setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item, setOptions, setProjects } from "/main.mjs"
+import { setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item, setOptions, setProjects, helpData } from "../../main.mjs";
 import { getCloudStore, uploadCloudStore } from "./firebase.mjs";
 import popup from "./popup.mjs";
 export const functions = {};
@@ -11,7 +11,13 @@ functions.updateFrame = function (save, timeSinceUpdate) {
     }
 }
 functions.quickUpdate = function () {
-    frame.src = `data:text/html;base64,${window.btoa(unescape(encodeURIComponent(editorHTML.env.editor.getValue() + injectScript + "<script>try{" + editorJS.getValue() + "}catch(error){console.error(error)}<\/script>")))}`;
+    if (options.dev_useDataURI) {
+        frame.src = `data:text/html;base64,${window.btoa(unescape(encodeURIComponent(`${editorHTML.env.editor.getValue() + injectScript}<script ${options.jsModules?'type="module"':''}>try{${editorJS.getValue()}}catch(error){console.error(error)}<\/script>`)))}`;
+        return
+    } 
+    var blob = new Blob([(`${editorHTML.env.editor.getValue() + injectScript}<script ${options.jsModules?'type="module"':''}>${editorJS.getValue()}<\/script>`)], { type: 'text/html' });
+    const blobUrl = URL.createObjectURL(blob)
+    frame.src = blobUrl;
 }
 
 let conversation = [];
@@ -116,7 +122,7 @@ functions.processTextString = function (inputText) {
             let codeLanguage = codeContent.splice(0, 1);
             codeContent = codeContent.join("\n")
             if (ace) {
-                var codeElement = `<textarea data-lang="${codeLanguage}">${codeContent}</textarea>`;
+                var codeElement = `<textarea data-lang=\"${codeLanguage}\">${codeContent}</textarea>`;
             } else {
                 var codeElement = `
                 <span>
@@ -286,80 +292,6 @@ functions.modifySave = function (f, id) {
     if (document.querySelector('.popup-content')) document.querySelector('.popup-content').innerHTML = html;
 
 }
-document.addEventListener("keydown", (e) => {
-    if (e.key == "s" && e.ctrlKey) {
-        e.preventDefault();
-        functions.saveAndLoad(true);
-    }
-    if (e.key == "S" && e.ctrlKey) {
-        e.preventDefault();
-        functions.uploadCloudStore()
-    }
-    if (e.key == "o" && e.ctrlKey) {
-        e.preventDefault();
-        functions.saveAndLoad(false);
-    }
-    if (e.key == "I" && e.ctrlKey) {
-        e.preventDefault();
-        document.querySelector('span[onclick="functions.toggleConsole()"]').click()
-    }
-    if (e.key == "F11") {
-        e.preventDefault();
-        functions.fullscreen()
-    }
-})
-// window.addEventListener('beforeunload', function (event) {
-//     event.preventDefault();
-//     event.returnValue = '';
-//     return 'Are you sure you want to leave? You might lose unsaved content.';
-// });
-document.getElementById('send').addEventListener("keydown", (e) => {
-    if (e.key == "Enter") {
-        document.getElementById('log').innerHTML += `<div class="info">${e.target.value}</div>`;
-        document.getElementsByTagName('iframe')[0].contentWindow.postMessage(e.target.value, "*");
-        if (itemHistory[itemHistory.length - 1] !== e.target.value) {
-            itemHistory.push(e.target.value)
-            item = itemHistory.length
-        }
-        e.target.value = "";
-    }
-    if (e.key == "ArrowUp") {
-        item--;
-        if (item < 0) item = 0
-        document.getElementById('send').value = itemHistory[item]
-    }
-    if (e.key == "ArrowDown") {
-        item++;
-        if (item > itemHistory.length - 1) item = itemHistory.length - 1
-        document.getElementById('send').value = itemHistory[item]
-    }
-})
-setInterval(() => {
-    if (document.querySelector('.popup-container')) {
-        document.querySelector('.ace_editor').style.zIndex = "-1";
-    } else if (document.querySelector('.ace_editor')) {
-        document.querySelector('.ace_editor').style.zIndex = "";
-    }
-}, 10)
-window.addEventListener('message', (e) => {
-    if (e.data.vscodeScheduleAsyncWork) return
-    console.log(e)
-    if (e.data.type === 'log') {
-        document.getElementById('log').innerHTML += `<div class="message"></div>`;
-        functions.displayJSON(e.data.message, document.querySelector('#log>.message:last-child'));
-    }
-    if (e.data.type === 'warn') {
-        document.getElementById('log').innerHTML += `<div class="warn">${e.data.message}</div>`;
-    }
-    if (e.data.type === 'error') {
-        document.getElementById('log').innerHTML += `<div class="error">${e.data.message}</div>`;
-    }
-    if (e.data.type === 'message') {
-        document.getElementById('log').innerHTML += `<div class="infoB"></div>`;
-        functions.displayJSON(e.data.message, document.querySelector('#log>.infoB:last-child'));
-    }
-    document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
-});
 
 functions.displayJSON = function (inputString, outputElement) {
     if (typeof inputString == "object") {
@@ -618,11 +550,33 @@ functions.getCloudProjects = function () {
                 save.push(projects[parseInt(input.dataset.id)])
             })
             document.querySelector('.popup-close').click()
-            this.showToast("Downloaded projects from Cloud!", 5000)
+            functions.showToast("Downloaded projects from Cloud!", 5000)
         })
     })
 }
 
 functions.uploadCloudStore = function () {
     uploadCloudStore({ save, options, date: Date.now() })
+}
+
+functions.displayHelp = function (help) {
+    const svg = "<svg onclick=\"navigator.clipboard.writeText(event.target.nextElementSibling.innerText)\" xmlns=\"http://www.w3.org/2000/svg\" height=\"1em\" viewBox=\"0 0 448 512\"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d=\"M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z\"/></svg>"
+    var body = helpData[help].body;
+    var codeblocks = helpData[help].codeblocks;
+    body = body.join("<br>")
+    body = body.replaceAll("%copy", svg);
+    codeblocks.forEach((codeblock, i) => {
+        console.log(codeblock, i)
+        body = body.replace("%code" + (i + 1), codeblock.join("\n"))
+    })
+
+    popup({
+        title: helpData[help].title,
+        content: "<span noGrid></span>" + body,
+        closeBtn: true,
+        clickToClose: true,
+        closeBtnText: "x",
+        bg: true
+    });
+    hljs.highlightAll();
 }

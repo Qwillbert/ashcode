@@ -6,6 +6,12 @@
     --background-color-alt: #2d313a;
     --background-color-hover: #1e2127;
     --text-link: #3498db;
+    --message-info-bg: #0077c6;
+    --message-info-alt: #0161a1;
+    --message-warning-bg: #ff9800;
+    --message-warning-alt: #b86f01;
+    --message-error-bg:#b71c1c;
+    --message-error-alt:#861515;
     margin: 0px;
     font-family: Consolas, 'Courier New', monospace;
     background: var(--background-color);
@@ -93,6 +99,8 @@ iframe.fullscreen+#fullscreenButton {
     height: env(titlebar-area-height, 20px);
     padding-left: 35px;
     -webkit-app-region: drag;
+    background-color: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
 }
 
 #controls>img {
@@ -303,9 +311,9 @@ iframe.fullscreen+#fullscreenButton {
 }
 
 .message {
-    background-color: rgb(0, 119, 198);
+    background-color: var(--message-info-bg);
     padding-left: 10px;
-    border-bottom: solid 3px rgb(1, 97, 161);
+    border-bottom: solid 3px var(--message-info-alt);
 
 }
 
@@ -322,9 +330,9 @@ iframe.fullscreen+#fullscreenButton {
 }
 
 .error {
-    background-color: #b71c1c;
+    background-color: var(--message-error-bg);
     padding: 0px 5px;
-    border-bottom: solid 3px #861515;
+    border-bottom: solid 3px var(--message-error-alt);
 
 }
 
@@ -337,9 +345,9 @@ iframe.fullscreen+#fullscreenButton {
 }
 
 .warn {
-    background-color: #ff9800;
+    background-color: var(--message-warning-bg);
     padding: 5px;
-    border-bottom: solid 3px #b86f01;
+    border-bottom: solid 3px var(--message-warning-alt);
 }
 
 .warn::before {
@@ -394,24 +402,7 @@ button#closeAiPopup {
     display: none;
 }
 
-#aiPopup code {
-    appearance: none;
-    background-color: var(--background-color-alt);
-    font-family: Consolas, 'Courier New', monospace;
-    display: inline-block;
-    border-radius: 3px;
-    border: none;
-    padding: 4px;
-    resize: none;
-    position: relative;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin-top: 15px;
-}
-
-#aiPopup>span>pre {
+span>pre {
     white-space: unset;
 }
 
@@ -420,7 +411,7 @@ button#closeAiPopup {
     height: 200px;
 }
 
-#aiPopup span {
+span:has(pre) {
     position: relative;
     display: inline-block;
 }
@@ -429,14 +420,32 @@ button#closeAiPopup {
     display: none;
 }
 
-#aiPopup code::before {
+code {
+    appearance: none;
+    background-color: var(--background-color-alt) !important;
+    font-family: Consolas, 'Courier New', monospace;
+    display: inline-block;
+    border-radius: 3px;
+    border: none;
+    padding: 4px;
+    padding-top: 30px !important;
+    resize: none;
+    position: relative;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+
+code::before {
     content: attr(data-lang);
     color: white;
     position: absolute;
     left: 0px;
-    top: -20px;
+    top: 0px;
     width: 100%;
-    padding: 3px;
+    padding: 4px 5px;
     box-sizing: border-box;
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
@@ -449,13 +458,12 @@ svg:has(+ pre) {
     fill: white;
     z-index: 10002;
     right: 4px;
-    top: 12.5px;
+    top: 18.5px;
 }
 
 svg:has(+ pre) * {
     pointer-events: none;
 }
-
 svg:has(+ pre):hover {
     fill: lightgrey;
     cursor: pointer;

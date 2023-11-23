@@ -61,8 +61,13 @@
                     <div class="dropdown">
                         <span onclick="functions.updateTabSize()">Update Tab Size</span>
                         <span onclick="functions.toggleEnableEmmet()" data-value=true>Enable Emmet</span>
-                        <span onclick="functions.toggleSimpleOption(event, 'aiAce')" data-name="aiAce"
-                            data-value=false>Use Ace for AI code</span>
+                        <span onclick="functions.toggleSimpleOption(event, 'aiAce')" data-name="aiAce" data-value=false>Use Ace for AI code</span>
+                        <span onclick="functions.toggleSimpleOption(event, 'warnOnClose')" data-name="warnOnClose" data-value=true>Warn before close</span>
+                        <span class="subMenu">Developer
+                            <div class="dropdown">
+                                <span onclick="functions.toggleSimpleOption(event, 'dev_useDataURI')" data-name="dev_useDataURI" data-value=false>Use Data URI's for iFrame</span>
+                            </div>
+                        </span>
                     </div>
                 </span>
                 <span class="subMenu">Cloud Data
@@ -81,6 +86,7 @@
                 <span onclick="functions.formatWorkspace()">Format</span>
                 <span onclick="functions.resetWorkspace()">Reset</span>
                 <span onclick="functions.askAI(prompt('What would you like to ask AI about?'))">Ask AI</span>
+                <span onclick="functions.toggleSimpleOption(event, 'jsModules')" data-value=false data-name="jsModules">Use Modules for JS</span>
                 <span class="subMenu" title="COMING SOON" aria-disabled="true">CSS Generators
                     <div class="dropdown">
                         <span>There's Nothing Here right now..</span>
@@ -94,24 +100,25 @@
                 <span onclick="functions.fullscreen()">Fullscreen</span>
                 <span class="subMenu">Auto-Update
                     <div class="dropdown">
-                        <span onclick="functions.toggleSimpleOption(event, 'autoUpdate')" data-value="true"
-                            data-name="autoUpdate">Auto Update enabled</span>
+                        <span onclick="functions.toggleSimpleOption(event, 'autoUpdate')" data-value="true" data-name="autoUpdate">Auto Update enabled</span>
                         <span onclick="functions.updateAutoUpdateTimer()">Update time before auto-update</span>
                     </div>
                 </span>
-                <span onclick="functions.toggleSimpleOption(event, 'jsMode')" data-value="false"
-                    data-name="jsMode">Javascript only</span>
+                <span onclick="functions.toggleSimpleOption(event, 'jsMode')" data-value="false" data-name="jsMode">Javascript only</span>
                 <span onclick="functions.openChangelog()">View Changelog</span>
             </div>
         </button>
         <button>Console
             <div class="dropdown">
                 <span onclick="functions.toggleConsole()" data-value=true>Enable Console</span>
-                <span onclick="functions.toggleSimpleOption(event, 'autoClear')" data-value=false
-                    data-name="autoClear">Clear Console on Update</span>
-                <span onclick="functions.toggleSimpleOption(event, 'infiniteObjectNesting')" data-value=false
-                    data-name="infiniteObjectNesting">Allow Infinite Object Nesting</span>
+                <span onclick="functions.toggleSimpleOption(event, 'autoClear')" data-value=false data-name="autoClear">Clear Console on Update</span>
+                <span onclick="functions.toggleSimpleOption(event, 'infiniteObjectNesting')" data-value=false data-name="infiniteObjectNesting">Allow Infinite Object Nesting</span>
                 <span onclick="functions.setConsoleHeight()">Set Console Height</span>
+            </div>
+        </button>
+        <button>Help
+            <div class="dropdown">
+                <span onclick="functions.displayHelp('jsModules')">Javascript Modules</span>
             </div>
         </button>
         <button style="display: none;" onclick="functions.quickUpdate()">Update iFrame</button>

@@ -19,8 +19,8 @@ export default function popup(options = {
         <h1 class="popup-header">${options.title}</h1>
         <div class="popup-content">
           ${options.content}
+          </div>
           ${options.closeBtn ? `<button class="popup-close">${options.closeBtnText}</button>` : ""}
-        </div>
       </div>
       ${options.bg ? `<div class="popup-bg"></div>` : ""}
     `;

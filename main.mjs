@@ -2,13 +2,16 @@
 import { functions } from "/assets/js/functions.mjs"
 import { monacoColors, monacoRules } from "./assets/js/colors.mjs";
 window.functions = functions
+const version = "1.7.5"
 
 export var itemHistory = [];
 export var item = 0
 
 export let timeSinceUpdate = 0;
 
-
+export const popupReference = {
+    reference: null
+}
 export var editorJS
 export var editorHTML;
 export var save = [{}];
@@ -31,12 +34,12 @@ fetch("changelog.txt").then(r=>r.text()).then(data => {
 })
 
 export var injectScript = `
-   <!-- Injected by ash-code | Forward Facing Console -->`
-fetch('assets/js/console.js').then(r => r.text()).then(data => {
+   <!-- Injected by Ash-code | Forward Facing Console -->`
+fetch("assets/js/console.js").then(r => r.text()).then(data => {
     injectScript += `<script id="ashcodeInjectedScript">
-    ${data}    
-    <\/script>`
+    ${data}<\/script>`
 })
+
 
 if (localStorage.getItem('ashcodeData')) {
     let data = JSON.parse(localStorage.getItem('ashcodeData'));

@@ -1,4 +1,4 @@
-import { setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item, setOptions, setProjects, helpData } from "../../main.mjs";
+import { setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item, setOptions, setProjects, helpData, popupReference } from "../../main.mjs";
 import { getCloudStore, uploadCloudStore } from "./firebase.mjs";
 import popup from "./popup.mjs";
 export const functions = {};
@@ -12,12 +12,23 @@ functions.updateFrame = function (save, timeSinceUpdate) {
 }
 functions.quickUpdate = function () {
     if (options.dev_useDataURI) {
-        frame.src = `data:text/html;base64,${window.btoa(unescape(encodeURIComponent(`${editorHTML.env.editor.getValue() + injectScript}<script ${options.jsModules?'type="module"':''}>try{${editorJS.getValue()}}catch(error){console.error(error)}<\/script>`)))}`;
+        frame.src = `data:text/html;base64,${window.btoa(unescape(encodeURIComponent(`${editorHTML.env.editor.getValue() + injectScript}<script>try{${editorJS.getValue()}}catch(error){console.error(error)}<\/script>`)))}`;
         return
-    } 
-    var blob = new Blob([(`${editorHTML.env.editor.getValue() + injectScript}<script ${options.jsModules?'type="module"':''}>${editorJS.getValue()}<\/script>`)], { type: 'text/html' });
+    }
+    var blob = new Blob([(functions.getProject(injectScript))], { type: 'text/html' });
     const blobUrl = URL.createObjectURL(blob)
     frame.src = blobUrl;
+    if (popupReference.reference) {
+        // popupReference.reference.document.write = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>Document</title></head><body></body></html>"
+        // popupReference.reference.document.write(functions.getProject(""))
+        var blob = new Blob([(functions.getProject(""))], { type: 'text/html' });
+        const blobUrl = URL.createObjectURL(blob)
+        popupReference.reference.document.querySelector("iframe").src = blobUrl
+    }
+}
+
+functions.getProject = function (injectedScript) {
+    return `${editorHTML.env.editor.getValue() + injectedScript}<script ${options.jsModules ? 'type="module"' : ''}>${editorJS.getValue()}<\/script>`
 }
 
 let conversation = [];
@@ -503,8 +514,8 @@ functions.getCloud = function () {
             html += item.name + "<br>";
         })
         html += `</div><input type="checkbox" id="optionsCloudDownload" checked><label for="optionsCloudDownload">Options</label><div class='projectList'>`;
-        for (let o in data.options) {
-            html += `${o}: ${data.options[o]}<br>`
+        for (let option in data.options) {
+            html += `${option}: ${data.options[option]}<br>`
         }
         html += "</div><button>Download</button>"
         popup({
@@ -518,7 +529,6 @@ functions.getCloud = function () {
         document.querySelector('.projectList+button').addEventListener('click', () => {
             if (document.getElementById('projectsCloudDownload').checked) {
                 setProjects(data.save);
-                
             }
             if (document.getElementById('optionsCloudDownload').checked) {
                 setOptions(data.options);
@@ -545,8 +555,8 @@ functions.getCloudProjects = function () {
             closeBtnText: "x",
             bg: true
         })
-        document.querySelector("#projectDownload>button").addEventListener("click", (e)=>{
-            document.querySelectorAll("#projectDownload>input").forEach(input=>{
+        document.querySelector("#projectDownload>button").addEventListener("click", (e) => {
+            document.querySelectorAll("#projectDownload>input").forEach(input => {
                 save.push(projects[parseInt(input.dataset.id)])
             })
             document.querySelector('.popup-close').click()
@@ -579,4 +589,13 @@ functions.displayHelp = function (help) {
         bg: true
     });
     hljs.highlightAll();
+}
+
+functions.openInPopup = function () {
+    var blob = new Blob([(functions.getProject(""))], { type: 'text/html' });
+    const blobUrl = URL.createObjectURL(blob)
+    const win = open("", "ashcodeProject", "popup");
+    win.document.write(`<iframe src="${blobUrl}" style="position:fixed;top:0;left:0;width:100%;height:100%;border:none;"></iframe>`)
+    // win.document.write(functions.getProject("<script><\/script>"));
+    popupReference.reference = win;
 }

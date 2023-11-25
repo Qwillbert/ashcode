@@ -2,6 +2,7 @@
 
 :root {
     --consoleHeight: 300px;
+    --projectWidth: 50%;
     --background-color: #282c34;
     --background-color-alt: #2d313a;
     --background-color-hover: #1e2127;
@@ -48,7 +49,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    width: 50%;
+    width: calc(100% - var(--projectWidth));
     height: 100%;
     resize: horizontal;
 }
@@ -57,7 +58,7 @@ iframe {
     position: fixed;
     top: env(titlebar-area-height, 20px);
     right: 0;
-    width: 50%;
+    width: var(--projectWidth);
     height: calc(100% - env(titlebar-area-height, 20px));
     z-index: -3;
     background-color: white;
@@ -219,35 +220,33 @@ iframe.fullscreen+#fullscreenButton {
     width: 1px;
 }
 
-.popup-content {
-    z-index: 999999999999999 !important;
-    grid-template-rows: repeat(3, 1fr);
-    background-color: var(--background-color);
-    color: white;
-}
-
 .popup-container {
     z-index: 9999999999999999999999999 !important;
 }
 
 .popup-content:not(:has(*[noGrid])) {
-    display: grid;
+    background-color: var(--background-color);
+    /* grid-template-columns: repeat(3, 1fr); */
+    z-index: 999999999999999 !important;
     overflow-x: hidden;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 3px;
+    color: white;
+    display: block;
+    /* gap: 3px; */
 }
 
 .popup-content>.menuItem {
+    width: calc((100% - 30px) / 3);
+    display: inline-block;
     background-color: var(--background-color-alt);
     height: 80px;
     text-align: center;
-    margin: 3px;
+    margin: 1px 3px;
     border-radius: 3px;
     transition: 100ms;
     cursor: pointer;
     border: dashed 1px transparent;
     text-align: center;
-
+    overflow: hidden;
 }
 
 .menuItem>span {
@@ -276,7 +275,7 @@ iframe.fullscreen+#fullscreenButton {
     bottom: 0px;
     right: 0px;
     z-index: 0;
-    width: 50%;
+    width: var(--projectWidth);
     height: var(--consoleHeight);
     background-color: #222;
     color: #fff;
@@ -372,7 +371,7 @@ input[type="text"] {
     right: 10px;
     z-index: 9999;
     top: calc(env(titlebar-area-height, 30px) + 10px);
-    width: calc(50% - 20px);
+    width: calc(var(--projectWidth) - 20px);
     height: calc(100% - 70px);
     box-sizing: border-box;
     color: white;
@@ -393,7 +392,7 @@ button#closeAiPopup {
     content: "X";
     position: fixed;
     top: calc(env(titlebar-area-height, 30px) + 10px);
-    left: calc(50% + 10px);
+    left: calc((100% - var(--projectWidth)) + 10px);
     padding: 5px 13px;
     margin: 8px;
     background-color: rgb(104, 104, 104);

@@ -1,12 +1,12 @@
 {
     "name": "Ash-code",
     "short_name": "Ash Code",
-    "description": "A lightweight code editor for quickly testing out projects",
+    "description": "A lightweight code editor for quickly testing out HTML5 projects",
     "start_url": "/",
     "display": "fullscreen",
     "background_color": "#282c34",
     "theme_color": "#282c34",
-    "version": "1.3.5",
+    "version": "1.7.5",
     "icons": [
         {
             "src": "assets/favicon.png",

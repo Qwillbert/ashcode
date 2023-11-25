@@ -96,8 +96,9 @@
         </button>
         <button>View
             <div class="dropdown">
-                <span onclick="functions.openInNewTab()">Open in new Tab</span>
+                <span onclick="functions.openInNewTab()">Open in new tab</span>
                 <span onclick="functions.fullscreen()">Fullscreen</span>
+                <span onclick="functions.openInPopup()">Open in popup</span>
                 <span class="subMenu">Auto-Update
                     <div class="dropdown">
                         <span onclick="functions.toggleSimpleOption(event, 'autoUpdate')" data-value="true" data-name="autoUpdate">Auto Update enabled</span>
@@ -126,6 +127,7 @@
     <div id="container">
         <div id="editorHTML"></div>
         <div id="editorJS"></div>
+        <div id="projectWidthChanger"></div>
     </div>
     <div id="aiPopup"></div>
     <button id="closeAiPopup">X</button>

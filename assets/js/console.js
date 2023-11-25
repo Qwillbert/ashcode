@@ -1,12 +1,13 @@
+var parentIdentifier = "parent";
 window.console.log = function (message) { returnData('log', message) };
 window.console.error = function (message) { returnData('error', message) };
 window.console.warn = function (message) { returnData('warn', message) };
 window.onerror = function (message) {
-    window.parent.postMessage({ type: "error", message: message }, "*")
+    window[parentIdentifier].postMessage({ type: "error", message: message }, "*")
 };
 window.addEventListener('message', (e) => {
     try {
-        window.parent.postMessage({
+        window[parentIdentifier].postMessage({
             type: "message",
             message: replaceHtmlElementsWithTags(eval(decodeURIComponent(e.data)))
         }, "*")
@@ -15,7 +16,7 @@ window.addEventListener('message', (e) => {
     }
 });
 function returnData(type, message) {
-    window.parent.postMessage({
+    window[parentIdentifier].postMessage({
         type: type,
         message: replaceHtmlElementsWithTags(message)
     }, "*")

@@ -1,4 +1,4 @@
-import { setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item, setOptions, setProjects, helpData, popupReference } from "../../main.mjs";
+import { setRecentProject, updateLocalStorage, frame, injectScript, editorJS, editorHTML, changelog, save, options, recent, itemHistory, item, setOptions, setProjects, helpData, popupReference, version } from "../../main.mjs";
 import { getCloudStore, uploadCloudStore } from "./firebase.mjs";
 import popup from "./popup.mjs";
 export const functions = {};
@@ -161,11 +161,12 @@ functions.fullscreen = function () {
 }
 functions.openChangelog = function () {
     popup({
-        title: "Changelog",
+        title: `Changelog (${version})`,
         content: `<span noGrid></span>${changelog.replaceAll("\n", "<br>")}`,
         closeBtn: true,
         clickToClose: true,
         closeBtnText: "x",
+        escToClose: true,
         bg: true
     })
 }
@@ -186,6 +187,7 @@ functions.saveAndLoad = function (saved) {
             closeBtn: true,
             clickToClose: true,
             closeBtnText: "x",
+            escToClose: true,
             bg: true
         })
     } else {
@@ -196,6 +198,7 @@ functions.saveAndLoad = function (saved) {
             closeBtn: true,
             clickToClose: true,
             closeBtnText: "x",
+            escToClose: true,
             bg: true
         })
     }
@@ -524,6 +527,7 @@ functions.getCloud = function () {
             closeBtn: true,
             clickToClose: true,
             closeBtnText: "x",
+            escToClose: true,
             bg: true
         })
         document.querySelector('.projectList+button').addEventListener('click', () => {
@@ -553,6 +557,7 @@ functions.getCloudProjects = function () {
             closeBtn: true,
             clickToClose: true,
             closeBtnText: "x",
+            escToClose: true,
             bg: true
         })
         document.querySelector("#projectDownload>button").addEventListener("click", (e) => {
@@ -574,11 +579,11 @@ functions.displayHelp = function (help) {
     var body = helpData[help].body;
     var codeblocks = helpData[help].codeblocks;
     body = body.join("<br>")
-    body = body.replaceAll("%copy", svg);
     codeblocks.forEach((codeblock, i) => {
         console.log(codeblock, i)
-        body = body.replace("%code" + (i + 1), codeblock.join("\n"))
+        body = body.replace("%code" + (i + 1), `<span>%copy<pre><code data-lang=\"${codeblock.language}\">${codeblock.code.join("\n")}</code></pre></span>`)
     })
+    body = body.replaceAll("%copy", svg);
 
     popup({
         title: helpData[help].title,
@@ -586,10 +591,12 @@ functions.displayHelp = function (help) {
         closeBtn: true,
         clickToClose: true,
         closeBtnText: "x",
+        escToClose: true,
         bg: true
     });
     hljs.highlightAll();
 }
+
 
 functions.openInPopup = function () {
     var blob = new Blob([(functions.getProject(""))], { type: 'text/html' });

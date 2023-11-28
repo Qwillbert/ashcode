@@ -6,7 +6,7 @@
     "display": "fullscreen",
     "background_color": "#282c34",
     "theme_color": "#282c34",
-    "version": "1.7.5",
+    "version": "1.8.5",
     "icons": [
         {
             "src": "assets/favicon.png",

@@ -5,32 +5,85 @@
             "By enabling the \"Use Modules for JS\" option, it allows you to use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules\">Javascript Modules</a> in your code (must be in the javascript editor).",
             "",
             "To import a npm package in your code you can use <a href=\"https://www.skypack.dev/\">Skypack.dev</a>. To import the \"Canvas Confetti\" package from npm, you can use the code",
-            "<span>%copy<pre><code data-lang=\"javascript\">%code1</code></pre></span>",
+            "%code1",
             "This will work for most npm packages. Here is an example with p5js.",
-            "<span>%copy<pre><code data-lang=\"javascript\">%code2</code></pre></span>"
+            "%code2"
         ],
         "codeblocks": [
-            [
-                "import confetti from 'https://cdn.skypack.dev/canvas-confetti';",
-                "confetti();"
-
-            ],
-            [
-                "import p5 from 'https://cdn.skypack.dev/p5';",
-                "",
-                "function sketch(sketch) {",
-                "    sketch.setup = function () {",
-                "        sketch.createCanvas(400, 400);",
-                "    };",
-                "",
-                "    sketch.draw = function () {",
-                "        sketch.background(200);",
-                "        sketch.line(0, 0, 200, 200);",
-                "    };",
-                "}",
-                "",
-                "new p5(sketch);"
-            ]
+            {
+                "language": "javascript",
+                "code": [
+                    "import confetti from 'https://cdn.skypack.dev/canvas-confetti';",
+                    "confetti();"
+                ]
+            },
+            {
+                "language": "javascript",
+                "code": [
+                    "import p5 from 'https://cdn.skypack.dev/p5';",
+                    "",
+                    "function sketch(sketch) {",
+                    "    sketch.setup = function () {",
+                    "        sketch.createCanvas(400, 400);",
+                    "    };",
+                    "",
+                    "    sketch.draw = function () {",
+                    "        sketch.background(200);",
+                    "        sketch.line(0, 0, 200, 200);",
+                    "    };",
+                    "}",
+                    "",
+                    "new p5(sketch);"
+                ]
+            }
+        ]
+    },
+    "console": {
+        "title": "Working with the Console",
+        "body": [
+            "If the console is enabled, the console will open on top of the active project.",
+            "It works like most other consoles, including Devtools, which you can access with CTRL + SHIFT + I",
+            "",
+            "9 out of 10 times, Devtools would be better than the built in console, but if you don't have access to it for some reason, then this will work.",
+            "",
+            "To log something to the console, like a variable, you can type:",
+            "%code1",
+            "",
+            "Both Devtools and the Ash-code console allow you to view objects with a dropdown menu",
+            "%code2",
+            "This will return a dropdown menu where you can look at all the values of an object, this also works with some HTML elements",
+            "",
+            "More info on the console at: <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/console\">MDN - Console Web API</a>"
+        ],
+        "codeblocks": [
+            {
+                "language": "javascript",
+                "code": [
+                    "//log a string",
+                    "console.log(\"Hello\");",
+                    "",
+                    "//log a variable",
+                    "const name = \"James\"",
+                    "console.log(name)",
+                    "",
+                    "//you can even log inside loops",
+                    "for (let i = 0; i < 10; i++) {",
+                    "    console.log(`Iteration: ${i + 1}`);",
+                    "}"
+                ]
+            },
+            {
+                "language": "javascript",
+                "code": [
+                    "const user = {",
+                    "    name: \"James\"",
+                    "    last: \"Smith\"",
+                    "    age: \"37\"",
+                    "}",
+                    "",
+                    "console.log(user)"
+                ]
+            }
         ]
     }
 }

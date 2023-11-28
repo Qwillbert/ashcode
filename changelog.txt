@@ -51,6 +51,4 @@
 
  == Roadmap == 
  - Allow users in PWA mode to "open in Ash-code"
- - Add CSS generators
-   - drop-shadow
-   - linear-gradient
+ - Add Auto cloud uploads on saving projects

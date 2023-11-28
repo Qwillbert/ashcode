@@ -2,7 +2,7 @@
 import { functions } from "/assets/js/functions.mjs"
 import { monacoColors, monacoRules } from "./assets/js/colors.mjs";
 window.functions = functions
-export const version = "1.8.5"
+export const version = "1.8.1"
 
 export var itemHistory = [];
 export var item = 0

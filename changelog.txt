@@ -1,3 +1,6 @@
+== 12/1/32 ==
+ - Added bar to easily change the width of project vs editor
+
 == 11/27/23 ==
  - Added help for console
  - Added CSS Gradient Generator

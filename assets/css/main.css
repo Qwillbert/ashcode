@@ -518,3 +518,14 @@ svg:has(+ pre):hover {
 a {
     color: var(--text-link);
 }
+
+#projectWidthChanger {
+    background-color: black;
+    height: 100%;
+    width: 5px;
+    display: block;
+    position: fixed;
+    left: calc( 100% - var(--projectWidth));
+    /* transform: translatex(-50%); */
+    cursor: w-resize;
+}

@@ -2,7 +2,7 @@
 import { functions } from "/assets/js/functions.mjs"
 import { monacoColors, monacoRules } from "./assets/js/colors.mjs";
 window.functions = functions
-export const version = "1.8.1"
+export const version = "1.9.0"
 
 export var itemHistory = [];
 export var item = 0
@@ -12,11 +12,16 @@ export let timeSinceUpdate = 0;
 export const popupReference = {
     reference: null
 }
+
 export var editorJS
 export var editorHTML;
 export var save = [{}];
 export let recent = {};
 export var options = { autoClear: false, infiniteObjectNesting: false, autoSave: true, timeBeforeUpdate: 0.5, autoUpdate: true, aiAce: false, jsModules: false, warnOnClose: true, dev_useDataURI: false };
+const resize = document.getElementById("projectWidthChanger");
+var isResizing = false;
+var resizeLeft = 50;
+
 window.options = options
 if (localStorage.getItem('ashcodeSave') || localStorage.getItem('ashcodeRecent')) {
     alert('converting old saves to new saving system')
@@ -67,6 +72,12 @@ export function updateLocalStorage() {
         recent: recent,
         options: options
     }))
+}
+
+export function clamp(num, min, max) {
+    if (num > max) num = max
+    if (num < min) num = min
+    return num
 }
 
 export function setRecentProject(data) { recent = data }
@@ -240,3 +251,19 @@ window.addEventListener('message', (e) => {
     }
     document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
 });
+
+resize.addEventListener("mousedown", () => {
+    isResizing = true;
+})
+
+addEventListener("mouseup", () => {
+    isResizing = false;
+})
+
+addEventListener("mousemove", (e) => {
+    if (isResizing) {
+        resizeLeft = e.clientX / innerWidth;
+        // resize.style.left = (resizeLeft * 100) + "%"
+        document.body.style.setProperty("--projectWidth", clamp(100 - ((resizeLeft * 100)), 0, 100) + "%");
+    }
+})
